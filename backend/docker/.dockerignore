@@ -1,0 +1,9 @@
+.git/
+.vscode/
+tmp/
+.dockerignore
+.gitignore
+.golangci.yml
+compose.yml
+Dockerfile
+.tool-versions
