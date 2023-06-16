@@ -14,11 +14,11 @@ func GetMySqlConf() mysql.Config {
 	}
 
 	conf := mysql.Config{
-		User:      getEnvOrDefault("DB_USER", "root"),
-		Passwd:    getEnvOrDefault("DB_PASSWORD", "password"),
+		User:      getEnvOrDefault("NS_MARIADB_USER", "root"),
+		Passwd:    getEnvOrDefault("NS_MARIADB_PASSWORD", "password"),
 		Net:       "tcp",
-		Addr:      getEnvOrDefault("DB_HOST", "db") + ":" + getEnvOrDefault("DB_PORT", "3306"),
-		DBName:    getEnvOrDefault("DB_NAME", "app"),
+		Addr:      getEnvOrDefault("NS_MARIADB_HOSTNAME", "db") + ":" + getEnvOrDefault("NS_MARIADB_PORT", "3306"),
+		DBName:    getEnvOrDefault("NS_MARIADB_DATABASE", "app"),
 		ParseTime: true,
 		Collation: "utf8mb4_unicode_ci",
 		Loc:       jst,
