@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ikura-hamu/go-air-mysql-template/src/config"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/traP-jp/h23s_01/backend/src/config"
 )
 
 func main() {
