@@ -6,17 +6,30 @@ import {
   countDownTimer,
   gameTimer,
   isPenalty,
+  resultIkaList,
+  resultShikaList,
+  resultMekaList,
+  ikaScore,
+  shikaScore,
+  mekaScore,
 } from ".././store.js";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import TimeBar from "../components/TimeBar.vue";
 import CardColumn from "../components/CardColumn.vue";
+import CountDown from "../components/CountDown.vue";
 import Penalty from "../components/Penalty.vue";
+import GameOver from "../components/GameOver.vue";
+
+const isStarted = ref(false);
 
 onMounted(() => {
-  addLeftIndex();
-  addMiddleIndex();
-  addRightIndex();
   countDown();
+  resultIkaList.value = [];
+  resultShikaList.value = [];
+  resultMekaList.value = [];
+  ikaScore.value = 0;
+  shikaScore.value = 0;
+  mekaScore.value = 0;
 });
 
 // 時間管理
@@ -27,22 +40,25 @@ const countDown = () => {
     countDownTimer.value--;
     if (countDownTimer.value === -1) {
       clearInterval(timer);
-      Timer();
       isStarted.value = true;
     }
   }, 1000);
 };
 
-const Timer = () => {
-  let timer = setInterval(() => {
-    gameTimer.value--;
-    if (gameTimer.value === 0) {
-      clearInterval(timer);
-    }
-  }, 1000);
-};
-
-const isStarted = ref(false);
+// ゲームが開始したらwatchでゲーム時間のカウントを開始する
+watch(isStarted, () => {
+  if (isStarted.value) {
+    addLeftIndex();
+    addMiddleIndex();
+    addRightIndex();
+    let timer = setInterval(() => {
+      gameTimer.value--;
+      if (gameTimer.value === 0) {
+        clearInterval(timer);
+      }
+    }, 1000);
+  }
+});
 
 // メッセージ追加の管理
 const leftIndex = ref(0);
@@ -50,7 +66,7 @@ const middleIndex = ref(0);
 const rightIndex = ref(0);
 
 const randomInterval = () => {
-  return 1000 + Math.floor(Math.random() * 1000);
+  return 1000 + Math.floor(Math.random() * 2000);
 };
 
 const addLeftIndex = () => {
@@ -80,32 +96,30 @@ const addRightIndex = () => {
 
 <template>
   <div v-if="!isStarted" class="count_down">
-    <p v-if="countDownTimer > 0" style="font-size: 64px">
-      {{ countDownTimer }}
-    </p>
-    <p v-if="countDownTimer == 0" style="font-size: 64px">START!</p>
+    <CountDown />
   </div>
   <div v-else class="game">
-    <Penalty v-if="isPenalty" />
+    <GameOver v-if="gameTimer === 0" />
+    <Penalty v-else-if="isPenalty" />
     <TimeBar />
     <div class="category">
       <div class="message_columns">
         <CardColumn
           :messageList="leftList.slice(0, leftIndex).reverse()"
           color="#f0f2f5"
-          title="Left"
+          title=""
           type="game"
         />
         <CardColumn
           :messageList="middleList.slice(0, middleIndex).reverse()"
           color="#6b7d8a"
-          title="Middle"
+          title=""
           type="game"
         />
         <CardColumn
           :messageList="rightList.slice(0, rightIndex).reverse()"
           color="#f0f2f5"
-          title="Right"
+          title=""
           type="game"
         />
       </div>
@@ -119,16 +133,6 @@ const addRightIndex = () => {
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-}
-.start {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 50vh;
-  text-align: center;
-  font-size: 24px;
-  font-weight: bold;
 }
 .game {
   position: relative;

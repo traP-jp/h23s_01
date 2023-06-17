@@ -12,6 +12,9 @@ const props = defineProps({
   title: {
     type: String,
   },
+  icon: {
+    type: String,
+  },
   type: {
     type: String,
     required: true,
@@ -20,6 +23,7 @@ const props = defineProps({
 </script>
 <template>
   <div class="card_column">
+    <img v-if="icon" class="column_icon" :src="icon" />
     <div class="column_title">{{ title }}</div>
     <div v-if="type === 'game'" :class="['column_contents', 'game_column']">
       <TransitionGroup name="message_cards">
@@ -48,6 +52,11 @@ const props = defineProps({
   justify-content: center;
   flex-wrap: wrap;
   width: calc(100% / 3);
+  .column_icon {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+  }
   .column_title {
     width: 100%;
     text-align: center;
@@ -56,6 +65,7 @@ const props = defineProps({
     margin-bottom: 10px;
   }
   .column_contents {
+    width: 100%;
     background-color: v-bind(color);
     padding: 5px 20px;
     .messsage_cards-move {
@@ -73,11 +83,11 @@ const props = defineProps({
     }
   }
   .game_column {
-    height: 500px;
+    height: 550px;
     overflow-y: hidden;
   }
   .result_column {
-    height: 500px;
+    height: 550px;
     overflow-y: scroll;
   }
 }
