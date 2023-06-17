@@ -4,8 +4,10 @@ import { onMounted } from "vue";
 import Title from "./pages/Title.vue";
 import Game from "./pages/Game.vue";
 import Result from "./pages/Result.vue";
+import axios from "axios";
 
 onMounted(() => {
+  axios.get("http://localhost:8080/api/oauth2/authorize");
   for (let i = 0; i < 50; i++) {
     allList.value.push({
       user: "ikura-hamu",
