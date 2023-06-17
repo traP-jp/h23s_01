@@ -1,9 +1,8 @@
 import { reactive, ref, computed } from "vue";
 
 // 認証の状態を管理する
-export const auth = reactive({
-  //TODO: 後で足す
-});
+export const user_id = ref("");
+export const user_name = ref("");
 
 // ゲームの状態を管理する
 export const status = ref("title");
