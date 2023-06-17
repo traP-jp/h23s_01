@@ -26,12 +26,14 @@ onMounted(() => {
         user_id.value = res.data.id;
         user_name.value = res.data.name;
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log(err);
         axios
           .get("http://localhost:8080/api/oauth2/callback?" + searchParams, {
             withCredentials: true,
           })
-          .then(
+          .then((res) => {
+            console.log(res);
             axios
               .get("http://localhost:8080/api/me", {
                 withCredentials: true,
@@ -40,8 +42,8 @@ onMounted(() => {
                 console.log(res.data);
                 user_id.value = res.data.id;
                 user_name.value = res.data.name;
-              })
-          );
+              });
+          });
       });
   } else {
     axios
@@ -53,11 +55,10 @@ onMounted(() => {
         user_id.value = res.data.id;
         user_name.value = res.data.name;
       })
-      .catch(
-        axios.get("http://localhost:8080/api/oauth2/authorize", {
-          withCredentials: true,
-        })
-      );
+      .catch((err) => {
+        console.log(err);
+        user_id.value = "unauthorized";
+      });
   }
   for (let i = 1; i < 100; i++) {
     allList.value.push({
@@ -85,10 +86,10 @@ onMounted(() => {
 
 <template>
   <div>
-    <div v-if="!user_id">
+    <div v-if="user_id === 'unauthorized'">
       <a href="http://localhost:8080/api/oauth2/authorize">認証用リンク</a>
     </div>
-    <div v-else>
+    <div v-else-if="user_id">
       <select v-model="status">
         <option value="title">Title</option>
         <option value="game">Game</option>
