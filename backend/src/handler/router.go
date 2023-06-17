@@ -48,6 +48,7 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 
 	api.PATCH("/channel", channelHandler.patchChennelsHandler)
 	api.PATCH("/user", userHandker.patchUserHandler)
+	api.POST("/post", client.PostScoreHandler)
 	api.GET("/me", client.getMeHandler, client.checkTraqLoginMiddleware)
 
 	e.Start(":8080")
