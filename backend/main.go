@@ -12,14 +12,17 @@ import (
 )
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal(err)
+	if config.GetMode() != "production" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	conf := config.GetMySqlConf()
 
 	var db *sqlx.DB
+	var err error
 
 	for i := 0; i < 10; i++ {
 		log.Println(i)

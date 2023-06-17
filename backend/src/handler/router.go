@@ -55,7 +55,9 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	oauth.GET("/callback", callbackHandler)
 
 	admin := api.Group("/admin")
-	admin.Use(client.checkAdminMiddleware)
+	if config.GetMode() == "production" {
+		admin.Use(client.checkAdminMiddleware)
+	}
 	admin.PATCH("/channel", channelHandler.patchChennelsHandler)
 	admin.PATCH("/user", userHandler.patchUserHandler)
 
