@@ -2,6 +2,7 @@ package traq
 
 import (
 	"context"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/traP-jp/h23s_01/backend/src/domain"
@@ -47,19 +48,35 @@ func (tc *traqClient) GetAllChannels(token, parentChannelName string) ([]domain.
 		return nil, err
 	}
 
-	var parentId string
+	allChannels := map[string]gotraq.Channel{}
+	var children []string
+	dir := strings.Split(parentChannelName, "/")
 	for _, ch := range chanList.Public {
-		if ch.Name == parentChannelName {
-			parentId = ch.Name
-			break
+		allChannels[ch.Id] = ch
+		if ch.Name == dir[0] && ch.ParentId.Get() == nil {
+			children = ch.Children
 		}
 	}
 
-	childChannels := []domain.Channel{}
-	for _, ch := range chanList.Public {
-		if *ch.ParentId.Get() == parentId {
-			childChannels = append(childChannels, domain.Channel{Id: uuid.MustParse(ch.Id), Name: ch.Name})
+	dir = dir[1:]
+	var childChannels []domain.Channel
+	for _, d := range dir {
+		for _, c := range children {
+			if allChannels[c].Name == d {
+				children = allChannels[c].Children
+				break
+			}
 		}
+	}
+
+	for _, c := range children {
+		uuid := uuid.MustParse(allChannels[c].Id)
+		name := allChannels[c].Name
+		childChannels = append(childChannels, domain.Channel{Id: uuid, Name: name})
+	}
+
+	if len(childChannels) == 0 {
+		return nil, ErrNoChannel
 	}
 
 	return childChannels, nil

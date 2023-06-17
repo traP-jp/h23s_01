@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/srinathgs/mysqlstore"
+	"github.com/traP-jp/h23s_01/backend/src/repository/implement"
 	"github.com/traP-jp/h23s_01/backend/src/traq"
 	gotraq "github.com/traPtitech/go-traq"
 )
@@ -34,12 +35,14 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	api := e.Group("/api")
 
 	client := NewTraqClient(traq.NewTraqClient(gotraq.NewAPIClient(gotraq.NewConfiguration())))
+	channelHandler := NewChannelHandler(traq.NewTraqClient(gotraq.NewAPIClient(gotraq.NewConfiguration())), implement.NewChannels(db))
 
 	oauth := api.Group("/oauth2")
 	oauth.GET("/authorize", authorizeHandler)
 	oauth.GET("/callback", callbackHandler)
 
 	api.GET("/me", client.getMeHandler)
+	api.PATCH("/channel", channelHandler.patchChennelsHandler)
 
 	e.Start(":8080")
 }
