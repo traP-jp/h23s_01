@@ -46,13 +46,16 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	channelHandler := NewChannelHandler(tc, implement.NewChannels(db))
 	userHandker := NewUserHandler(tc, ur)
 	messagesHandler := NewMessageHandler(tc, implement.NewChannels(db), ur, reading.NewTokenizer())
-
+	scoreHandler := NewScoreHandler(traq.NewTraqClient(gotraq.NewAPIClient(gotraq.NewConfiguration())), implement.NewScore(db))
+  
 	oauth := api.Group("/oauth2")
 	oauth.GET("/authorize", authorizeHandler)
 	oauth.GET("/callback", callbackHandler)
 
 	api.PATCH("/channel", channelHandler.patchChennelsHandler)
-	api.PATCH("/user", userHandker.patchUserHandler)
+	api.PATCH("/user", userHandler.patchUserHandler)
+	api.POST("/post", client.PostScoreHandler)
+	api.POST("/score", scoreHandler.AddScoreHandler)
 	api.GET("/me", client.getMeHandler, client.checkTraqLoginMiddleware)
 	api.GET("/message", messagesHandler.getMessagesHandler, client.checkTraqLoginMiddleware)
 
