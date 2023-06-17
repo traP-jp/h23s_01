@@ -8,6 +8,7 @@ import {
   penaltyTimer,
   ikaScore,
   shikaScore,
+  mekaScore,
 } from ".././store.js";
 const props = defineProps({
   message: {
@@ -22,6 +23,17 @@ const props = defineProps({
 
 const isCorrect = ref(false);
 const isIncorrect = ref(false);
+
+// テキストのうち「いか」「しか」「めか」に相当する文字のインデックスを返す
+const getKeywordsIndex = () => {
+  return props.message.content.indexOf("いか") !== -1
+    ? props.message.content.indexOf("いか")
+    : props.message.content.indexOf("しか") !== -1
+    ? props.message.content.indexOf("しか")
+    : props.message.content.indexOf("めか") !== -1
+    ? props.message.content.indexOf("めか")
+    : -2;
+};
 
 const onClickHandler = () => {
   if (props.type === "game") {
@@ -76,7 +88,7 @@ const penaltyCount = () => {
     @click="onClickHandler()"
   >
     <div v-if="isCorrect" class="correct_text">正解！</div>
-    <div v-if="isIncorrect" class="incorrect_text">不正解！</div>
+    <div v-else-if="isIncorrect" class="incorrect_text">不正解！</div>
     <div class="message_header">
       <img
         class="message_icon"
@@ -86,7 +98,19 @@ const penaltyCount = () => {
     </div>
     <div class="message_separator" />
     <div class="message_channel">#&nbsp;{{ message.channel }}</div>
-    <div class="message_text">{{ message.content }}</div>
+    <div class="message_text">
+      <template v-for="(char, index) in message.content">
+        <span
+          :class="{
+            keyword_char:
+              (isCorrect || type === 'result') &&
+              (index === getKeywordsIndex() ||
+                index === getKeywordsIndex() + 1),
+          }"
+          >{{ char }}</span
+        >
+      </template>
+    </div>
   </button>
 </template>
 <style scoped lang="scss">
@@ -144,6 +168,10 @@ const penaltyCount = () => {
     width: 100%;
     text-align: left;
     font-size: 16px;
+    .keyword_char {
+      color: #ff0000;
+      font-weight: bold;
+    }
   }
 }
 .correct_card {

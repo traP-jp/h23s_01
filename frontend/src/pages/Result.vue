@@ -17,12 +17,17 @@ onMounted(() => {});
   <div>
     <h1>リザルト</h1>
     <div class="scoreboard">
-      <h1>トータルスコア: {{ totalScore }}</h1>
-      <h2>
-        いかスコア：{{ ikaScore }}　しかスコア：{{ shikaScore }}　めかスコア：{{
-          mekaScore
-        }}
-      </h2>
+      <div class="scoreboard_title">
+        トータルスコア:&nbsp;&nbsp;{{ totalScore }}
+      </div>
+      <div class="scoreboard_detail">
+        <img class="scoreboard_detail_icon" src="/ika.svg" />
+        <div class="scoreboard_detail_score">{{ ikaScore }}</div>
+        <img class="scoreboard_detail_icon" src="/shika.svg" />
+        <div class="scoreboard_detail_score">{{ shikaScore }}</div>
+        <img class="scoreboard_detail_icon" src="/meka.svg" />
+        <div class="scoreboard_detail_score">{{ mekaScore }}</div>
+      </div>
     </div>
     <div class="messages_title">今回出会ったメッセージ</div>
     <div class="messages_description">
@@ -33,18 +38,21 @@ onMounted(() => {});
         :messageList="resultIkaList.reverse()"
         color="#f0f2f5"
         title="いか"
+        icon="/ika.svg"
         type="result"
       />
       <CardColumn
         :messageList="resultShikaList.reverse()"
         color="#6b7d8a"
         title="しか"
+        icon="/shika.svg"
         type="result"
       />
       <CardColumn
         :messageList="resultMekaList.reverse()"
         color="#f0f2f5"
         title="めか"
+        icon="/meka.svg"
         type="result"
       />
     </div>
@@ -68,6 +76,26 @@ onMounted(() => {});
   margin: 60px;
   padding: 32px;
   border-radius: 10px;
+  .scoreboard_title {
+    font-size: 40px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  .scoreboard_detail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .scoreboard_detail_icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 20px;
+    }
+    .scoreboard_detail_score {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 0 20px;
+    }
+  }
 }
 .messages_title {
   font-size: 32px;

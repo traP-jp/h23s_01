@@ -9,6 +9,9 @@ import {
   resultIkaList,
   resultShikaList,
   resultMekaList,
+  ikaScore,
+  shikaScore,
+  mekaScore,
 } from ".././store.js";
 import { ref, onMounted, watch } from "vue";
 import TimeBar from "../components/TimeBar.vue";
@@ -24,6 +27,9 @@ onMounted(() => {
   resultIkaList.value = [];
   resultShikaList.value = [];
   resultMekaList.value = [];
+  ikaScore.value = 0;
+  shikaScore.value = 0;
+  mekaScore.value = 0;
 });
 
 // 時間管理
