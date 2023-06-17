@@ -122,7 +122,6 @@ onMounted(() => {
           </ul>
         </div>
       </div>
-      <p>{{ allList }}</p>
     </div>
   </div>
 </template>

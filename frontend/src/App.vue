@@ -4,8 +4,13 @@ import { onMounted } from "vue";
 import Title from "./pages/Title.vue";
 import Game from "./pages/Game.vue";
 import Result from "./pages/Result.vue";
+import axios from "axios";
 
 onMounted(() => {
+  const searchParams = new URLSearchParams( window.location.search );
+  if (searchParams.toString() !== "") {
+    axios.get("http://localhost:8080/api/oauth2/callback?"+searchParams);
+  }
   for (let i = 1; i < 100; i++) {
     allList.value.push({
       user: "ikura-hamu",
@@ -28,6 +33,12 @@ onMounted(() => {
     rightList.value.push(allList.value[i]);
   }
 });
+
+
+
+const onClickButton = () => {
+  axios.get("http://localhost:8080/api/oauth2/callback?"+searchParams);
+};
 </script>
 
 <template>
@@ -37,6 +48,8 @@ onMounted(() => {
       <option value="game">Game</option>
       <option value="result">Result</option>
     </select>
+    <a href="http://localhost:8080/api/oauth2/authorize">認証用リンク</a>
+    <button @click="onClickButton">sdfgsdfg</button>
     <div v-if="status === 'title'">
       <Title />
     </div>
