@@ -15,6 +15,7 @@ import Result from "./pages/Result.vue";
 import axios from "axios";
 
 onMounted(() => {
+  // traQ認証の実装
   const searchParams = new URLSearchParams(window.location.search);
   if (searchParams.toString() !== "") {
     axios
@@ -119,14 +120,13 @@ onMounted(() => {
 <template>
   <div>
     <div v-if="user_id === 'unauthorized'">
-      <a href="http://localhost:8080/api/oauth2/authorize">認証用リンク</a>
+      <a
+        class="authorize_link"
+        href="http://localhost:8080/api/oauth2/authorize"
+        >認証用リンク</a
+      >
     </div>
     <div v-else-if="user_id">
-      <select v-model="status">
-        <option value="title">Title</option>
-        <option value="game">Game</option>
-        <option value="result">Result</option>
-      </select>
       <div v-if="status === 'title'">
         <Title />
       </div>
@@ -136,8 +136,26 @@ onMounted(() => {
       <div v-if="status === 'result'">
         <Result />
       </div>
+      <select v-model="status">
+        <option value="title">Title</option>
+        <option value="game">Game</option>
+        <option value="result">Result</option>
+      </select>
     </div>
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.authorize_link {
+  background-color: #005bac;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  width: 128px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  &:hover {
+    background-color: #0066cc;
+  }
+}
+</style>

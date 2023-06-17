@@ -8,6 +8,7 @@ import {
   shikaScore,
   mekaScore,
   totalScore,
+  status,
 } from "../store.js";
 import CardColumn from "../components/CardColumn.vue";
 onMounted(() => {
@@ -56,6 +57,10 @@ onMounted(() => {
         }}
       </h2>
     </div>
+    <div class="messages_title">今回出会ったメッセージ</div>
+    <div class="messages_description">
+      traQのチャンネルにアクセスしてみよう！
+    </div>
     <div class="message_columns">
       <CardColumn
         :messageList="resultIkaList.reverse()"
@@ -76,6 +81,12 @@ onMounted(() => {
         type="result"
       />
     </div>
+    <div class="back_button_container">
+      <button class="back_button" @click="status = 'title'">
+        タイトルに戻る
+      </button>
+      <button class="back_button" @click="status = 'game'">もういちど</button>
+    </div>
   </div>
 </template>
 <style scoped lang="scss">
@@ -83,11 +94,37 @@ onMounted(() => {
   display: flex;
   justify-content: space-around;
   width: 100%;
+  margin-bottom: 60px;
 }
 .scoreboard {
   background-color: #e0e2ff;
-  margin: 64px;
+  margin: 60px;
   padding: 32px;
   border-radius: 10px;
+}
+.messages_title {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 20px;
+}
+.messages_description {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+.back_button_container {
+  display: flex;
+  justify-content: center;
+  .back_button {
+    background-color: #005bac;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 10px 30px;
+    margin: 0 20px;
+    border-radius: 10px;
+    &:hover {
+      background-color: #0066cc;
+    }
+  }
 }
 </style>

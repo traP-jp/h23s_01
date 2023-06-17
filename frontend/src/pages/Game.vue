@@ -7,15 +7,15 @@ import {
   gameTimer,
   isPenalty,
 } from ".././store.js";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import TimeBar from "../components/TimeBar.vue";
 import CardColumn from "../components/CardColumn.vue";
 import Penalty from "../components/Penalty.vue";
+import GameOver from "../components/GameOver.vue";
+
+const isStarted = ref(false);
 
 onMounted(() => {
-  addLeftIndex();
-  addMiddleIndex();
-  addRightIndex();
   countDown();
 });
 
@@ -27,22 +27,25 @@ const countDown = () => {
     countDownTimer.value--;
     if (countDownTimer.value === -1) {
       clearInterval(timer);
-      Timer();
       isStarted.value = true;
     }
   }, 1000);
 };
 
-const Timer = () => {
-  let timer = setInterval(() => {
-    gameTimer.value--;
-    if (gameTimer.value === 0) {
-      clearInterval(timer);
-    }
-  }, 1000);
-};
-
-const isStarted = ref(false);
+// ゲームが開始したらwatchでゲーム時間のカウントを開始する
+watch(isStarted, () => {
+  if (isStarted.value) {
+    addLeftIndex();
+    addMiddleIndex();
+    addRightIndex();
+    let timer = setInterval(() => {
+      gameTimer.value--;
+      if (gameTimer.value === 0) {
+        clearInterval(timer);
+      }
+    }, 1000);
+  }
+});
 
 // メッセージ追加の管理
 const leftIndex = ref(0);
@@ -50,7 +53,7 @@ const middleIndex = ref(0);
 const rightIndex = ref(0);
 
 const randomInterval = () => {
-  return 1000 + Math.floor(Math.random() * 1000);
+  return 1000 + Math.floor(Math.random() * 2000);
 };
 
 const addLeftIndex = () => {
@@ -86,7 +89,8 @@ const addRightIndex = () => {
     <p v-if="countDownTimer == 0" style="font-size: 64px">START!</p>
   </div>
   <div v-else class="game">
-    <Penalty v-if="isPenalty" />
+    <GameOver v-if="gameTimer === 0" />
+    <Penalty v-else-if="isPenalty" />
     <TimeBar />
     <div class="category">
       <div class="message_columns">

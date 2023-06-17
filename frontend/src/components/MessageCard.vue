@@ -17,9 +17,7 @@ const props = defineProps({
     required: true,
   },
 });
-const icon = ref(
-  `https://q.trap.jp/api/v3/public/icon/${props.message.user}.png`
-);
+
 const isCorrect = ref(false);
 const isIncorrect = ref(false);
 
@@ -73,7 +71,10 @@ const penaltyCount = () => {
     @click="onClickHandler()"
   >
     <div class="message_header">
-      <image class="message_icon" :src="icon" />
+      <img
+        class="message_icon"
+        :src="`https://q.trap.jp/api/v3/public/icon/${props.message.user}`"
+      />
       <div class="message_user">{{ message.user }}</div>
     </div>
     <div class="message_separator" />

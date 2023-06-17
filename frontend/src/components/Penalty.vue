@@ -15,19 +15,16 @@ import { penaltyTimer } from ".././store.js";
   align-items: center;
   height: 100%;
   width: 100%;
-  font-size: 32px;
-  font-weight: bold;
-  background-color: #f0f2f5;
+  background-color: rgb(240, 242, 245, 0.8);
   z-index: 100;
-  opacity: 0.8;
   .penalty_text {
-    opacity: 1;
+    font-size: 32px;
+    font-weight: bold;
   }
   .penalty_timer {
     font-size: 64px;
     font-weight: bold;
     color: #005bac;
-    opacity: 1;
   }
 }
 </style>
