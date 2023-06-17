@@ -50,7 +50,7 @@ export const messages = reactive({
   resultMekaList: [],
 });
 
-// ランキングを管理する
+// ランキングを管理するc
 export const ranking = reactive({
   list: [],
 });
