@@ -21,6 +21,10 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	e.Use(session.Middleware(store))
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:5173"},
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
+	}))
 
 	e.GET("/", func(c echo.Context) error {
 		var i int64
