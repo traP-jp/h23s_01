@@ -25,10 +25,11 @@ func NewChannelHandler(tc traq.TraqClient, cr repository.ChannelsRepository) *ch
 
 func (ch *channelHandler) patchChennelsHandler(c echo.Context) error {
 	root := c.QueryParam("root")
+	fmt.Println(root)
 	if root == "" {
-		root = "gps+times"
+		root = "gps/times"
 	}
-	root = strings.ReplaceAll(root, "+", "/")
+	root = strings.ReplaceAll(root, " ", "/")
 
 	token, err := getToken(c)
 	if err != nil {
