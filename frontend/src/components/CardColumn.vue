@@ -83,11 +83,11 @@ const props = defineProps({
     }
   }
   .game_column {
-    height: 550px;
+    height: 650px;
     overflow-y: hidden;
   }
   .result_column {
-    height: 550px;
+    height: 650px;
     overflow-y: scroll;
   }
 }

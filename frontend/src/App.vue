@@ -7,6 +7,7 @@ import {
   rightList,
   user_id,
   user_name,
+  API_URL,
 } from "./store.js";
 import { onMounted } from "vue";
 import Title from "./pages/Title.vue";
@@ -20,7 +21,7 @@ onMounted(() => {
   const searchParams = new URLSearchParams(window.location.search);
   if (searchParams.toString() !== "") {
     axios
-      .get("http://localhost:8080/api/me", {
+      .get(`${API_URL}/api/me`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -31,13 +32,13 @@ onMounted(() => {
       .catch((err) => {
         console.log(err);
         axios
-          .get("http://localhost:8080/api/oauth2/callback?" + searchParams, {
+          .get(`${API_URL}/api/oauth2/callback?${searchParams}`, {
             withCredentials: true,
           })
           .then((res) => {
             console.log(res);
             axios
-              .get("http://localhost:8080/api/me", {
+              .get(`${API_URL}/api/me`, {
                 withCredentials: true,
               })
               .then((res) => {
@@ -49,7 +50,7 @@ onMounted(() => {
       });
   } else {
     axios
-      .get("http://localhost:8080/api/me", {
+      .get(`${API_URL}/api/me`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -122,9 +123,7 @@ onMounted(() => {
   <div>
     <Background />
     <div v-if="user_id === 'unauthorized'">
-      <a
-        class="authorize_link"
-        href="http://localhost:8080/api/oauth2/authorize"
+      <a class="authorize_link" :href="`${API_URL}/api/oauth2/authorize`"
         >認証用リンク</a
       >
     </div>
@@ -138,11 +137,6 @@ onMounted(() => {
       <div v-if="status === 'result'">
         <Result />
       </div>
-      <select v-model="status">
-        <option value="title">Title</option>
-        <option value="game">Game</option>
-        <option value="result">Result</option>
-      </select>
     </div>
   </div>
 </template>

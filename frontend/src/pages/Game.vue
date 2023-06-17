@@ -102,27 +102,26 @@ const addRightIndex = () => {
     <GameOver v-if="gameTimer === 0" />
     <Penalty v-else-if="isPenalty" />
     <TimeBar />
-    <div class="category">
-      <div class="message_columns">
-        <CardColumn
-          :messageList="leftList.slice(0, leftIndex).reverse()"
-          color="#f0f2f5"
-          title=""
-          type="game"
-        />
-        <CardColumn
-          :messageList="middleList.slice(0, middleIndex).reverse()"
-          color="#6b7d8a"
-          title=""
-          type="game"
-        />
-        <CardColumn
-          :messageList="rightList.slice(0, rightIndex).reverse()"
-          color="#f0f2f5"
-          title=""
-          type="game"
-        />
-      </div>
+
+    <div class="message_columns">
+      <CardColumn
+        :messageList="leftList.slice(0, leftIndex).reverse()"
+        color="#f0f2f5"
+        title=""
+        type="game"
+      />
+      <CardColumn
+        :messageList="middleList.slice(0, middleIndex).reverse()"
+        color="#6b7d8a"
+        title=""
+        type="game"
+      />
+      <CardColumn
+        :messageList="rightList.slice(0, rightIndex).reverse()"
+        color="#f0f2f5"
+        title=""
+        type="game"
+      />
     </div>
   </div>
 </template>
@@ -133,6 +132,7 @@ const addRightIndex = () => {
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
+  margin-top: 40px;
 }
 .game {
   position: relative;

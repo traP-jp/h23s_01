@@ -1,6 +1,7 @@
 import { reactive, ref, computed } from "vue";
 
 // 認証の状態を管理する
+export const API_URL = "http://localhost:8080";
 export const user_id = ref("");
 export const user_name = ref("");
 
