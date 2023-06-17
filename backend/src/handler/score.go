@@ -38,7 +38,7 @@ func (sh *ScoreHandler) AddScoreHandler(c echo.Context) error {
 	c.Bind(&score)
 	score.Id = uuid.New()
 	score.UserId = user.Id
-	if err := sh.sr.AddScore(&score); err != nil {
+	if err := sh.sr.RegisterScore(&score); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 	return c.String(http.StatusOK, "ok")

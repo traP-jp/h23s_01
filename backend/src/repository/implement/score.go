@@ -15,7 +15,7 @@ func NewScore(db *sqlx.DB) *Score {
 	}
 }
 
-func (s *Score) AddScore(score *domain.Score) error {
+func (s *Score) RegisterScore(score *domain.Score) error {
 	_, err := s.db.NamedExec("INSERT INTO scores (id, user_id, score) VALUES (:id, :user_id, :score)", score)
 	if err != nil {
 		return err
