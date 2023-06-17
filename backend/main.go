@@ -2,20 +2,24 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/traP-jp/h23s_01/backend/src/config"
+	"github.com/traP-jp/h23s_01/backend/src/handler"
 )
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	conf := config.GetMySqlConf()
 
 	var db *sqlx.DB
-	var err error
 
 	for i := 0; i < 10; i++ {
 		log.Println(i)
@@ -33,18 +37,6 @@ func main() {
 	}
 
 	e := echo.New()
+	handler.SetUpRoutes(e, db)
 
-	e.Use(middleware.Recover())
-	e.Use(middleware.Logger())
-
-	e.GET("/", func(c echo.Context) error {
-		var i int64
-		err := db.Get(&i, "SELECT COUNT(*) FROM users")
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
-		}
-		return c.JSON(http.StatusOK, i)
-	})
-
-	e.Start(":8080")
 }
