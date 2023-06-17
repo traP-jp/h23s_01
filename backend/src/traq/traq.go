@@ -2,8 +2,10 @@ package traq
 
 import (
 	"context"
+	"math/rand"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/traP-jp/h23s_01/backend/src/domain"
@@ -13,6 +15,7 @@ import (
 type TraqClient interface {
 	GetMe(string) (*User, error)
 	GetAllChannels(token, paretChannelName string) ([]domain.Channel, error)
+	GetChannelMessages(token, channelId string) ([]gotraq.Message, error)
 	GetAllUsers(token string) ([]domain.User, error)
 	PostScore(token string, score int) error
 }
@@ -83,6 +86,41 @@ func (tc *traqClient) GetAllChannels(token, parentChannelName string) ([]domain.
 	}
 
 	return childChannels, nil
+}
+
+func (tc *traqClient) GetChannelMessages(token, channelId string) ([]gotraq.Message, error) {
+	messages, _, err := tc.client.MessageApi.
+		SearchMessages(context.WithValue(context.Background(), gotraq.ContextAccessToken, token)).
+		Limit(1).
+		Bot(false).
+		In(channelId).
+		Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	var offset int32
+	totalCount := messages.GetTotalHits()
+	if totalCount <= 100 {
+		offset = 0
+	} else {
+		r := rand.New(rand.NewSource(time.Now().UnixNano()))
+		r.Seed(time.Now().UnixNano())
+		offset = rand.Int31n(int32(totalCount) - 100)
+	}
+
+	messages, _, err = tc.client.MessageApi.
+		SearchMessages(context.WithValue(context.Background(), gotraq.ContextAccessToken, token)).
+		Limit(100).
+		Offset(offset).
+		In(channelId).
+		Bot(false).
+		Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	return messages.GetHits(), nil
 }
 
 func (tc *traqClient) GetAllUsers(token string) ([]domain.User, error) {
