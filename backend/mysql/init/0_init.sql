@@ -18,4 +18,14 @@ CREATE TABLE `channels` (
   `name` varchar(128) not null
 )ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci
+  COLLATE = utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `scores`;
+CREATE TABLE `scores` (
+  `id` varchar(36) not null primary key,
+  `user_id` varchar(36) not null,
+  `score` int not null default 0,
+  `created_at` datetime default CURRENT_TIMESTAMP()
+)ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;

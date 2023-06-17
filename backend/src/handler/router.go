@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/srinathgs/mysqlstore"
+	"github.com/traP-jp/h23s_01/backend/src/reading"
 	"github.com/traP-jp/h23s_01/backend/src/repository/implement"
 	"github.com/traP-jp/h23s_01/backend/src/traq"
 	gotraq "github.com/traPtitech/go-traq"
@@ -23,8 +24,9 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:5173"},
-		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
+		AllowCredentials: true,
 	}))
 
 	e.GET("/", func(c echo.Context) error {
@@ -38,17 +40,26 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 
 	api := e.Group("/api")
 
-	client := NewTraqClient(traq.NewTraqClient(gotraq.NewAPIClient(gotraq.NewConfiguration())))
-	channelHandler := NewChannelHandler(traq.NewTraqClient(gotraq.NewAPIClient(gotraq.NewConfiguration())), implement.NewChannels(db))
-	userHandker := NewUserHandler(traq.NewTraqClient(gotraq.NewAPIClient(gotraq.NewConfiguration())), implement.NewUsers(db))
+	tc := traq.NewTraqClient(gotraq.NewAPIClient(gotraq.NewConfiguration()))
+	ur := implement.NewUsers(db)
+
+	client := NewTraqClient(tc)
+	channelHandler := NewChannelHandler(tc, implement.NewChannels(db))
+	userHandler := NewUserHandler(tc, ur)
+	messagesHandler := NewMessageHandler(tc, implement.NewChannels(db), ur, reading.NewTokenizer())
+	scoreHandler := NewScoreHandler(tc, implement.NewScore(db))
 
 	oauth := api.Group("/oauth2")
 	oauth.GET("/authorize", authorizeHandler)
 	oauth.GET("/callback", callbackHandler)
 
 	api.PATCH("/channel", channelHandler.patchChennelsHandler)
-	api.PATCH("/user", userHandker.patchUserHandler)
+	api.PATCH("/user", userHandler.patchUserHandler)
+	api.POST("/post", client.postScoreHandler)
+	api.POST("/score", scoreHandler.registerScoreHandler)
+	api.GET("/score/highest", scoreHandler.getHighestScoreHandler)
 	api.GET("/me", client.getMeHandler, client.checkTraqLoginMiddleware)
+	api.GET("/message", messagesHandler.getMessagesHandler, client.checkTraqLoginMiddleware)
 
 	e.Start(":8080")
 }
