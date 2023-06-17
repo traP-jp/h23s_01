@@ -22,3 +22,4 @@ go.work
 
 .tool-versions
 tmp
+.env
