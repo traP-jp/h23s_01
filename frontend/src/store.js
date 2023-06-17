@@ -10,10 +10,9 @@ export const status = ref("title");
 
 // タイマーを管理する
 export const countDownTimer = ref(3);
-export const gameTimer = ref(30)
+export const gameTimer = ref(30);
+
 // 得点を管理する
-
-
 export const score = reactive({
   ika: 0,
   shika: 0,
@@ -24,32 +23,25 @@ export const score = reactive({
   highest: 0,
 });
 
-// メッセージリストを管理する
-export const messages = reactive({
-  allList: [],
-  correctList: computed(() => {
-    return messages.allList.filter((message) => {
-      return message.ika || message.shika || message.meka;
-    });
-  }),
-  incorrectList: computed(() => {
-    return messages.allList.filter((message) => {
-      return !message.ika && !message.shika && !message.meka;
-    });
-  }),
-
-  // ゲーム画面用
-  leftList: [],
-  middleList: [],
-  rightList: [],
-
-  // リザルト画面用
-  resultIkaList: [],
-  resultShikaList: [],
-  resultMekaList: [],
+export const allList = ref([]);
+export const correctList = computed(() => {
+  return messages.allList.filter((message) => {
+    return message.ika || message.shika || message.meka;
+  });
 });
+export const incorrectList = computed(() => {
+  return messages.allList.filter((message) => {
+    return !message.ika && !message.shika && !message.meka;
+  });
+});
+export const leftList = ref([]);
+export const middleList = ref([]);
+export const rightList = ref([]);
+export const resultIkaList = ref([]);
+export const resultShikaList = ref([]);
+export const resultMekaList = ref([]);
 
-// ランキングを管理するc
+// ランキングを管理する
 export const ranking = reactive({
   list: [],
 });

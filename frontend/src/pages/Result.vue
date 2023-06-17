@@ -1,11 +1,11 @@
 <script setup>
 import { onMounted } from "vue";
-import { messages } from "../store.js";
+import { resultIkaList, resultShikaList, resultMekaList } from "../store.js";
 import CardColumn from "../components/CardColumn.vue";
 
 onMounted(() => {
   for (let i = 0; i < 10; i++) {
-    messages.resultIkaList.push({
+    resultIkaList.value.push({
       user: "ikura-hamu",
       messageId: i,
       channel: "gps/times/ikura-hamu",
@@ -15,7 +15,7 @@ onMounted(() => {
       shika: true,
       meka: true,
     });
-    messages.resultShikaList.push({
+    resultShikaList.value.push({
       user: "ikura-hamu",
       messageId: i,
       channel: "gps/times/ikura-hamu",
@@ -25,7 +25,7 @@ onMounted(() => {
       shika: true,
       meka: true,
     });
-    messages.resultMekaList.push({
+    resultMekaList.value.push({
       user: "ikura-hamu",
       messageId: i,
       channel: "gps/times/ikura-hamu",
@@ -43,17 +43,17 @@ onMounted(() => {
     <h1>Result</h1>
     <div class="message_columns">
       <CardColumn
-        :messageList="messages.resultIkaList.reverse()"
+        :messageList="resultIkaList.reverse()"
         color="#f0f2f5"
         title="いか"
       />
       <CardColumn
-        :messageList="messages.resultShikaList.reverse()"
+        :messageList="resultShikaList.reverse()"
         color="#6b7d8a"
         title="しか"
       />
       <CardColumn
-        :messageList="messages.resultMekaList.reverse()"
+        :messageList="resultMekaList.reverse()"
         color="#f0f2f5"
         title="めか"
       />
