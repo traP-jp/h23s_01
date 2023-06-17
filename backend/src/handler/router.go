@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/srinathgs/mysqlstore"
+	"github.com/traP-jp/h23s_01/backend/src/reading"
 	"github.com/traP-jp/h23s_01/backend/src/repository/implement"
 	"github.com/traP-jp/h23s_01/backend/src/traq"
 	gotraq "github.com/traPtitech/go-traq"
@@ -38,9 +39,13 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 
 	api := e.Group("/api")
 
-	client := NewTraqClient(traq.NewTraqClient(gotraq.NewAPIClient(gotraq.NewConfiguration())))
-	channelHandler := NewChannelHandler(traq.NewTraqClient(gotraq.NewAPIClient(gotraq.NewConfiguration())), implement.NewChannels(db))
-	userHandker := NewUserHandler(traq.NewTraqClient(gotraq.NewAPIClient(gotraq.NewConfiguration())), implement.NewUsers(db))
+	tc := traq.NewTraqClient(gotraq.NewAPIClient(gotraq.NewConfiguration()))
+	ur := implement.NewUsers(db)
+
+	client := NewTraqClient(tc)
+	channelHandler := NewChannelHandler(tc, implement.NewChannels(db))
+	userHandker := NewUserHandler(tc, ur)
+	messagesHandler := NewMessageHandler(tc, implement.NewChannels(db), ur, reading.NewTokenizer())
 
 	oauth := api.Group("/oauth2")
 	oauth.GET("/authorize", authorizeHandler)
@@ -49,6 +54,7 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	api.PATCH("/channel", channelHandler.patchChennelsHandler)
 	api.PATCH("/user", userHandker.patchUserHandler)
 	api.GET("/me", client.getMeHandler, client.checkTraqLoginMiddleware)
+	api.GET("/message", messagesHandler.getMessagesHandler, client.checkTraqLoginMiddleware)
 
 	e.Start(":8080")
 }

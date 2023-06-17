@@ -90,6 +90,7 @@ func (tc *traqClient) GetChannelMessages(token, channelId string) ([]gotraq.Mess
 	messages, _, err := tc.client.MessageApi.
 		SearchMessages(context.WithValue(context.Background(), gotraq.ContextAccessToken, token)).
 		Limit(1).
+		Bot(false).
 		In(channelId).
 		Execute()
 	if err != nil {
@@ -111,6 +112,7 @@ func (tc *traqClient) GetChannelMessages(token, channelId string) ([]gotraq.Mess
 		Limit(100).
 		Offset(offset).
 		In(channelId).
+		Bot(false).
 		Execute()
 	if err != nil {
 		return nil, err
