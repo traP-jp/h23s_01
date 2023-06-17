@@ -24,8 +24,8 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:5173"},
-		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
 		AllowCredentials: true,
 	}))
 
@@ -53,10 +53,11 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	oauth.GET("/authorize", authorizeHandler)
 	oauth.GET("/callback", callbackHandler)
 
-	api.PATCH("/channel", channelHandler.patchChennelsHandler, client.checkTraqLoginMiddleware) //TODO: adminのmiddlewareに変える
-	api.PATCH("/user", userHandler.patchUserHandler, client.checkTraqLoginMiddleware) //TODO: adminのmiddlewareに変える
-	api.POST("/post", client.PostScoreHandler, client.checkTraqLoginMiddleware)
-	api.POST("/score", scoreHandler.AddScoreHandler, client.checkTraqLoginMiddleware)
+	api.PATCH("/channel", channelHandler.patchChennelsHandler)
+	api.PATCH("/user", userHandler.patchUserHandler)
+	api.POST("/post", client.postScoreHandler)
+	api.POST("/score", scoreHandler.registerScoreHandler)
+	api.GET("/score/highest", scoreHandler.getHighestScoreHandler)
 	api.GET("/me", client.getMeHandler, client.checkTraqLoginMiddleware)
 	api.GET("/message", messagesHandler.getMessagesHandler, client.checkTraqLoginMiddleware)
 
