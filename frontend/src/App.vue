@@ -12,6 +12,7 @@ import { onMounted } from "vue";
 import Title from "./pages/Title.vue";
 import Game from "./pages/Game.vue";
 import Result from "./pages/Result.vue";
+import Background from "./components/Background.vue";
 import axios from "axios";
 
 onMounted(() => {
@@ -119,6 +120,7 @@ onMounted(() => {
 
 <template>
   <div>
+    <Background />
     <div v-if="user_id === 'unauthorized'">
       <a
         class="authorize_link"
