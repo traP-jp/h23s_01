@@ -5,10 +5,12 @@ import {
   rightList,
   countDownTimer,
   gameTimer,
+  isPenalty,
 } from ".././store.js";
 import { ref, onMounted } from "vue";
 import TimeBar from "../components/TimeBar.vue";
 import CardColumn from "../components/CardColumn.vue";
+import Penalty from "../components/Penalty.vue";
 
 onMounted(() => {
   addLeftIndex();
@@ -84,8 +86,8 @@ const addRightIndex = () => {
     <p v-if="countDownTimer == 0" style="font-size: 64px">START!</p>
   </div>
   <div v-else class="game">
+    <Penalty v-if="isPenalty" />
     <TimeBar />
-    <h1>Game</h1>
     <div class="category">
       <div class="message_columns">
         <CardColumn
@@ -127,5 +129,8 @@ const addRightIndex = () => {
   text-align: center;
   font-size: 24px;
   font-weight: bold;
+}
+.game {
+  position: relative;
 }
 </style>

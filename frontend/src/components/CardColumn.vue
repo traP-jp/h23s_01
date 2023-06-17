@@ -21,7 +21,14 @@ const props = defineProps({
 <template>
   <div class="card_column">
     <div class="column_title">{{ title }}</div>
-    <div class="column_contents">
+    <div v-if="type === 'game'" :class="['column_contents', 'game_column']">
+      <TransitionGroup name="message_cards">
+        <template v-for="message in messageList" :key="message.messageId">
+          <MessageCard :message="message" :type="type" />
+        </template>
+      </TransitionGroup>
+    </div>
+    <div v-if="type === 'result'" :class="['column_contents', 'result_column']">
       <TransitionGroup name="message_cards">
         <template v-for="message in messageList" :key="message.messageId">
           <MessageCard :message="message" :type="type" />
@@ -51,8 +58,6 @@ const props = defineProps({
   .column_contents {
     background-color: v-bind(color);
     padding: 5px 20px;
-    height: 500px;
-    overflow-y: hidden;
     .messsage_cards-move {
       transition: all 1s ease;
     }
@@ -66,6 +71,14 @@ const props = defineProps({
       opacity: 0;
       transform: translateX(10px);
     }
+  }
+  .game_column {
+    height: 500px;
+    overflow-y: hidden;
+  }
+  .result_column {
+    height: 500px;
+    overflow-y: scroll;
   }
 }
 </style>

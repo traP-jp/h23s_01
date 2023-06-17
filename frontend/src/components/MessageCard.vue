@@ -1,6 +1,12 @@
 <script setup>
 import { ref, defineProps } from "vue";
-import { resultIkaList, resultShikaList, resultMekaList } from ".././store.js";
+import {
+  resultIkaList,
+  resultShikaList,
+  resultMekaList,
+  isPenalty,
+  penaltyTimer,
+} from ".././store.js";
 const props = defineProps({
   message: {
     type: Object,
@@ -32,6 +38,8 @@ const onClickHandler = () => {
       }
     } else {
       isIncorrect.value = true;
+      isPenalty.value = true;
+      penaltyCount();
     }
   } else if (props.type === "result") {
     // traQのメッセージを新しいタブで開く
@@ -40,6 +48,18 @@ const onClickHandler = () => {
       "_blank"
     );
   }
+};
+
+// isPenaltyがTrueに切り替わったらカウントダウン
+const penaltyCount = () => {
+  penaltyTimer.value = 3;
+  let timer = setInterval(() => {
+    penaltyTimer.value--;
+    if (penaltyTimer.value === 0) {
+      clearInterval(timer);
+      isPenalty.value = false;
+    }
+  }, 1000);
 };
 </script>
 <template>
