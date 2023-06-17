@@ -13,3 +13,11 @@ CREATE TABLE `users` (
   COLLATE = utf8mb4_general_ci;
 
 INSERT INTO `users` (`user_id`) VALUES ("7265b13d-9e06-42f6-98e3-41ea742f8fb2");
+
+DROP TABLE IF EXISTS `channels`;
+CREATE TABLE `channels` (
+  `id` varchar(36) not null primary key,
+  `name` varchar(128) not null
+)ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci
