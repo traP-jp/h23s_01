@@ -23,7 +23,9 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 
 	e.Use(session.Middleware(store))
 	e.Use(middleware.Recover())
-	e.Use(middleware.Logger())
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "${status} |${time_rfc3339} |${method} |${host}${uri}\t|error:\"${error}\"\t|latency:${latency_human}\n",
+	}))
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     []string{config.GetAccessControlAllowOrigin()},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
