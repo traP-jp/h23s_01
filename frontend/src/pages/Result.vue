@@ -85,9 +85,9 @@ onMounted(() => {
   width: 100%;
 }
 .scoreboard {
-  border: solid 3px #646fcc;
+  background-color: #e0e2ff;
   margin: 64px;
-  //width: 500px;
+  padding: 32px;
   border-radius: 10px;
 }
 </style>
