@@ -6,15 +6,35 @@ import Game from "./pages/Game.vue";
 import Result from "./pages/Result.vue";
 
 onMounted(() => {
-  for (let i = 1; i < 100; i++) {
+  for (let i = 0; i < 50; i++) {
     allList.value.push({
       user: "ikura-hamu",
       messageId: i,
       channel: "gps/times/ikura-hamu",
-      content: "いかしかめか大学" + i,
+      content: "いかのお寿司大学" + i,
       createdAt: "2023-06-14T05:46:02.585Z",
       ika: true,
+      shika: false,
+      meka: false,
+    });
+    allList.value.push({
+      user: "masky5859",
+      messageId: i,
+      channel: "gps/times/masky5859",
+      content: "かくかくしかじかエコカー減税ダイハツから" + i,
+      createdAt: "2023-06-14T05:46:02.585Z",
+      ika: false,
       shika: true,
+      meka: false,
+    });
+    allList.value.push({
+      user: "Akira_256",
+      messageId: i,
+      channel: "gps/times/Akira_256",
+      content: "ときめかないラブストーリー" + i,
+      createdAt: "2023-06-14T05:46:02.585Z",
+      ika: false,
+      shika: false,
       meka: true,
     });
     allList.value.push({
