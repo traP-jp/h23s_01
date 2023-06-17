@@ -22,6 +22,7 @@ func GetMySqlConf() mysql.Config {
 		ParseTime: true,
 		Collation: "utf8mb4_unicode_ci",
 		Loc:       jst,
+		AllowNativePasswords: true,
 	}
 
 	return conf
