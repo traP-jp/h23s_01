@@ -11,6 +11,8 @@ export const status = ref("title");
 // タイマーを管理する
 export const countDownTimer = ref(3);
 export const gameTimer = ref(30);
+export const penaltyTimer = ref(3);
+export const isPenalty = ref(false);
 
 // 得点を管理する
 export const ikaScore = ref(0);
