@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -23,7 +24,7 @@ func NewScoreHandler(tc traq.TraqClient, sr repository.ScoreRepository) *ScoreHa
 	}
 }
 
-func (sh *ScoreHandler) AddScoreHandler(c echo.Context) error {
+func (sh *ScoreHandler) registerScoreHandler(c echo.Context) error {
 	token, err := getToken(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
@@ -42,4 +43,31 @@ func (sh *ScoreHandler) AddScoreHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 	return c.JSON(http.StatusOK, map[string]int{"score": score.Score})
+}
+
+func (sh *ScoreHandler) getHighestScoreHandler(c echo.Context) error {
+	token, err := getToken(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, err)
+	}
+
+	user, err := sh.tc.GetMe(token)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: %v", err))
+	}
+
+	highScore, err := sh.sr.GetHighestScore(user.Id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	resp := struct {
+		Score     int       `json:"score"`
+		CreatedAt time.Time `json:"created_at"`
+	}{
+		highScore.Score,
+		highScore.CreatedAt,
+	}
+
+	return c.JSON(http.StatusOK, resp)
 }

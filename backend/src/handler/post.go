@@ -11,7 +11,7 @@ type scoreBinder struct {
 	Score int `json:"score"`
 }
 
-func (tc *traqClient) PostScoreHandler(c echo.Context) error {
+func (tc *traqClient) postScoreHandler(c echo.Context) error {
 	token, err := getToken(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
