@@ -11,40 +11,7 @@ import {
   status,
 } from "../store.js";
 import CardColumn from "../components/CardColumn.vue";
-onMounted(() => {
-  for (let i = 0; i < 10; i++) {
-    resultIkaList.value.push({
-      user: "ikura-hamu",
-      messageId: i,
-      channel: "gps/times/ikura-hamu",
-      content: "いか大学",
-      createdAt: "2023-06-14T05:46:02.585Z",
-      ika: true,
-      shika: true,
-      meka: true,
-    });
-    resultShikaList.value.push({
-      user: "ikura-hamu",
-      messageId: i,
-      channel: "gps/times/ikura-hamu",
-      content: "しか大学",
-      createdAt: "2023-06-14T05:46:02.585Z",
-      ika: true,
-      shika: true,
-      meka: true,
-    });
-    resultMekaList.value.push({
-      user: "ikura-hamu",
-      messageId: i,
-      channel: "gps/times/ikura-hamu",
-      content: "めか大学",
-      createdAt: "2023-06-14T05:46:02.585Z",
-      ika: true,
-      shika: true,
-      meka: true,
-    });
-  }
-});
+onMounted(() => {});
 </script>
 <template>
   <div>

@@ -3,7 +3,7 @@ import { penaltyTimer } from ".././store.js";
 </script>
 <template>
   <div class="penalty">
-    <div class="penalty_text">Loading...</div>
+    <div class="penalty_text">復帰まで...</div>
     <div class="penalty_timer">{{ penaltyTimer }}</div>
   </div>
 </template>

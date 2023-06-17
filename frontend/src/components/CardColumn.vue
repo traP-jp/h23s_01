@@ -56,6 +56,7 @@ const props = defineProps({
     margin-bottom: 10px;
   }
   .column_contents {
+    width: 100%;
     background-color: v-bind(color);
     padding: 5px 20px;
     .messsage_cards-move {
@@ -73,11 +74,11 @@ const props = defineProps({
     }
   }
   .game_column {
-    height: 500px;
+    height: 550px;
     overflow-y: hidden;
   }
   .result_column {
-    height: 500px;
+    height: 550px;
     overflow-y: scroll;
   }
 }

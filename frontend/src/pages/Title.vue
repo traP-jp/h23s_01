@@ -15,7 +15,7 @@ const play = () => {
       />
       <div class="user_name">{{ user_name }}</div>
     </div>
-    <button @click="play" class="play">Play</button>
+    <button @click="play" class="play">あそぶ</button>
   </div>
 </template>
 

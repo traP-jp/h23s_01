@@ -10,6 +10,7 @@ import {
 import { ref, onMounted, watch } from "vue";
 import TimeBar from "../components/TimeBar.vue";
 import CardColumn from "../components/CardColumn.vue";
+import CountDown from "../components/CountDown.vue";
 import Penalty from "../components/Penalty.vue";
 import GameOver from "../components/GameOver.vue";
 
@@ -83,10 +84,7 @@ const addRightIndex = () => {
 
 <template>
   <div v-if="!isStarted" class="count_down">
-    <p v-if="countDownTimer > 0" style="font-size: 64px">
-      {{ countDownTimer }}
-    </p>
-    <p v-if="countDownTimer == 0" style="font-size: 64px">START!</p>
+    <CountDown />
   </div>
   <div v-else class="game">
     <GameOver v-if="gameTimer === 0" />
@@ -97,19 +95,19 @@ const addRightIndex = () => {
         <CardColumn
           :messageList="leftList.slice(0, leftIndex).reverse()"
           color="#f0f2f5"
-          title="Left"
+          title=""
           type="game"
         />
         <CardColumn
           :messageList="middleList.slice(0, middleIndex).reverse()"
           color="#6b7d8a"
-          title="Middle"
+          title=""
           type="game"
         />
         <CardColumn
           :messageList="rightList.slice(0, rightIndex).reverse()"
           color="#f0f2f5"
-          title="Right"
+          title=""
           type="game"
         />
       </div>
@@ -123,16 +121,6 @@ const addRightIndex = () => {
   flex-direction: row;
   justify-content: space-around;
   align-items: center;
-}
-.start {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 50vh;
-  text-align: center;
-  font-size: 24px;
-  font-weight: bold;
 }
 .game {
   position: relative;
