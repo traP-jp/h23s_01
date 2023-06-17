@@ -1,6 +1,6 @@
 <script setup>
 import { status, allList, leftList, middleList, rightList } from "./store.js";
-import { ref, onMounted } from "vue";
+import { onMounted } from "vue";
 import Title from "./pages/Title.vue";
 import Game from "./pages/Game.vue";
 import Result from "./pages/Result.vue";
@@ -8,8 +8,14 @@ import Result from "./pages/Result.vue";
 onMounted(() => {
   for (let i = 1; i < 100; i++) {
     allList.value.push({
-      id: i,
-      content: "text" + i,
+      user: "ikura-hamu",
+      messageId: i,
+      channel: "gps/times/ikura-hamu",
+      content: "いかしかめか大学",
+      createdAt: "2023-06-14T05:46:02.585Z",
+      ika: true,
+      shika: true,
+      meka: true,
     });
   }
   for (let i = 0; i < 33; i++) {
