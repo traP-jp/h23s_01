@@ -1,5 +1,6 @@
 <script setup>
-import { ref,onMounted } from "vue";
+import { messages } from "../store.js";
+import { onMounted } from "vue";
 import { countDownTimer } from "../store.js";
 import { gameTimer } from "../store.js";
 import TimeBar from "../components/TimeBar.vue";
@@ -9,7 +10,7 @@ const countDown = () => {
     countDownTimer.value--;
     if (countDownTimer.value === -1) {
       clearInterval(timer);
-      Timer(); 
+      Timer();
     }
   }, 1000);
 };
@@ -26,27 +27,25 @@ const Timer = () => {
 onMounted(() => {
   countDown();
 });
-
-
-
 </script>
 
 <template>
   <div class="category">
     <h1>Game</h1>
+    <p>{{ messages.allList }}</p>
   </div>
-  
+
   <div>
     <TimeBar />
   </div>
   <div class="start">
-    <p v-if="countDownTimer > 0" style="font-size: 64px;">{{ countDownTimer }}</p>
-    <p v-if="countDownTimer == 0" style="font-size: 64px;">START!</p>
+    <p v-if="countDownTimer > 0" style="font-size: 64px">
+      {{ countDownTimer }}
+    </p>
+    <p v-if="countDownTimer == 0" style="font-size: 64px">START!</p>
   </div>
 
-  <div class="game">
-    
-  </div>
+  <div class="game"></div>
 </template>
 
 <style>
@@ -60,5 +59,4 @@ onMounted(() => {
   font-size: 24px;
   font-weight: bold;
 }
-
 </style>
