@@ -1,9 +1,9 @@
 <script setup>
-import { status } from '../store';
+import { status } from "../store";
 
 const play = () => {
-  status.value = "game"
-}
+  status.value = "game";
+};
 </script>
 <template>
   <div>
@@ -14,7 +14,7 @@ const play = () => {
 
 <style>
 .play {
-  background-color: #646fcc;
+  background-color: #005bac;
   color: white;
   font-weight: bold;
   font-size: 24px;

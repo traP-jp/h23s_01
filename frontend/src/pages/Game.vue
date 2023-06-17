@@ -6,12 +6,21 @@ import {
   countDownTimer,
   gameTimer,
 } from ".././store.js";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import TimeBar from "../components/TimeBar.vue";
 import CardColumn from "../components/CardColumn.vue";
 
+onMounted(() => {
+  addLeftIndex();
+  addMiddleIndex();
+  addRightIndex();
+  countDown();
+});
+
 // 時間管理
 const countDown = () => {
+  countDownTimer.value = 3;
+  gameTimer.value = 30;
   let timer = setInterval(() => {
     countDownTimer.value--;
     if (countDownTimer.value === -1) {
@@ -39,15 +48,8 @@ const middleIndex = ref(0);
 const rightIndex = ref(0);
 
 const randomInterval = () => {
-  return Math.floor(Math.random() * 5) * 1000;
+  return 1000 + Math.floor(Math.random() * 1000);
 };
-
-onMounted(() => {
-  addLeftIndex();
-  addMiddleIndex();
-  addRightIndex();
-  countDown();
-});
 
 const addLeftIndex = () => {
   if (leftIndex.value >= leftList.value.length) {
@@ -90,16 +92,19 @@ const addRightIndex = () => {
           :messageList="leftList.slice(0, leftIndex).reverse()"
           color="#f0f2f5"
           title="Left"
+          type="game"
         />
         <CardColumn
           :messageList="middleList.slice(0, middleIndex).reverse()"
           color="#6b7d8a"
           title="Middle"
+          type="game"
         />
         <CardColumn
           :messageList="rightList.slice(0, rightIndex).reverse()"
           color="#f0f2f5"
           title="Right"
+          type="game"
         />
       </div>
     </div>

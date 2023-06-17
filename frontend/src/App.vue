@@ -17,14 +17,26 @@ onMounted(() => {
       shika: true,
       meka: true,
     });
+    allList.value.push({
+      user: "aya_se",
+      messageId: i,
+      channel: "gps/times/ikura-hamu",
+      content:
+        "東京工業大学は、東京都目黒区大岡山に本部を置く日本の国立大学である。" +
+        i,
+      createdAt: "2023-06-14T05:46:02.585Z",
+      ika: false,
+      shika: false,
+      meka: false,
+    });
   }
-  for (let i = 0; i < 33; i++) {
+  for (let i = 0; i < 200; i += 3) {
     leftList.value.push(allList.value[i]);
   }
-  for (let i = 33; i < 66; i++) {
+  for (let i = 1; i < 200; i += 3) {
     middleList.value.push(allList.value[i]);
   }
-  for (let i = 66; i < 99; i++) {
+  for (let i = 2; i < 200; i += 3) {
     rightList.value.push(allList.value[i]);
   }
 });

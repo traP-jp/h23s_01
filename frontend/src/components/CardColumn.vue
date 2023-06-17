@@ -7,9 +7,14 @@ const props = defineProps({
   },
   color: {
     type: String,
+    required: true,
   },
   title: {
     type: String,
+  },
+  type: {
+    type: String,
+    required: true,
   },
 });
 </script>
@@ -19,7 +24,7 @@ const props = defineProps({
     <div class="column_contents">
       <TransitionGroup name="message_cards">
         <template v-for="message in messageList" :key="message.messageId">
-          <MessageCard :message="message" />
+          <MessageCard :message="message" :type="type" />
         </template>
       </TransitionGroup>
     </div>
