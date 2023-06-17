@@ -9,12 +9,11 @@ export const auth = reactive({
 export const status = ref("title");
 
 // タイマーを管理する
-export const timer = reactive({
-  countDownTimer: 3,
-  gameTimer: 30,
-});
-
+export const countDownTimer = ref(3);
+export const gameTimer = ref(30)
 // 得点を管理する
+
+
 export const score = reactive({
   ika: 0,
   shika: 0,
