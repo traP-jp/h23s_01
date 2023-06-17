@@ -13,14 +13,11 @@ export const countDownTimer = ref(3);
 export const gameTimer = ref(30);
 
 // 得点を管理する
-export const score = reactive({
-  ika: 0,
-  shika: 0,
-  meka: 0,
-  total: computed(() => {
-    return score.ika + score.shika + score.meka;
-  }),
-  highest: 0,
+export const ikaScore = ref(0);
+export const shikaScore = ref(0);
+export const mekaScore = ref(0);
+export const totalScore = computed(() => {
+  return ikaScore.value + shikaScore.value + mekaScore.value;
 });
 
 export const allList = ref([]);
