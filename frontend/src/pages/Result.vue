@@ -15,7 +15,7 @@ onMounted(() => {});
 </script>
 <template>
   <div>
-    <h1>Result</h1>
+    <h1>リザルト</h1>
     <div class="scoreboard">
       <h1>トータルスコア: {{ totalScore }}</h1>
       <h2>

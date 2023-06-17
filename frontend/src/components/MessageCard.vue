@@ -6,6 +6,8 @@ import {
   resultMekaList,
   isPenalty,
   penaltyTimer,
+  ikaScore,
+  shikaScore,
 } from ".././store.js";
 const props = defineProps({
   message: {
@@ -27,12 +29,15 @@ const onClickHandler = () => {
       isCorrect.value = true;
       if (props.message.ika) {
         resultIkaList.value.push(props.message);
+        ikaScore.value++;
       }
       if (props.message.shika) {
         resultShikaList.value.push(props.message);
+        shikaScore.value++;
       }
       if (props.message.meka) {
         resultMekaList.value.push(props.message);
+        mekaScore.value++;
       }
     } else {
       isIncorrect.value = true;
@@ -70,6 +75,8 @@ const penaltyCount = () => {
     ]"
     @click="onClickHandler()"
   >
+    <div v-if="isCorrect" class="correct_text">正解！</div>
+    <div v-if="isIncorrect" class="incorrect_text">不正解！</div>
     <div class="message_header">
       <img
         class="message_icon"
@@ -84,6 +91,7 @@ const penaltyCount = () => {
 </template>
 <style scoped lang="scss">
 .message_card {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -143,5 +151,17 @@ const penaltyCount = () => {
 }
 .incorrect_card {
   border-color: #ff0000 !important;
+}
+.correct_text {
+  position: absolute;
+  font-size: 32px;
+  font-weight: bold;
+  color: #00ff00;
+}
+.incorrect_text {
+  position: absolute;
+  font-size: 32px;
+  font-weight: bold;
+  color: #ff0000;
 }
 </style>

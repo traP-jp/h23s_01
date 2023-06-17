@@ -6,6 +6,9 @@ import {
   countDownTimer,
   gameTimer,
   isPenalty,
+  resultIkaList,
+  resultShikaList,
+  resultMekaList,
 } from ".././store.js";
 import { ref, onMounted, watch } from "vue";
 import TimeBar from "../components/TimeBar.vue";
@@ -18,6 +21,9 @@ const isStarted = ref(false);
 
 onMounted(() => {
   countDown();
+  resultIkaList.value = [];
+  resultShikaList.value = [];
+  resultMekaList.value = [];
 });
 
 // 時間管理
