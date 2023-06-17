@@ -18,6 +18,11 @@ func NewTraqClient(tc traq.TraqClient) *traqClient {
 	}
 }
 
+type getMeResponse struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
 func (tc *traqClient) getMeHandler(c echo.Context) error {
 	token, err := getToken(c)
 	if err != nil {
@@ -28,5 +33,8 @@ func (tc *traqClient) getMeHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusOK, user)
+	return c.JSON(http.StatusOK, getMeResponse{
+		Id:   user.Id.String(),
+		Name: user.Name,
+	})
 }
