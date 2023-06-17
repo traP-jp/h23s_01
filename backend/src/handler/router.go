@@ -45,18 +45,18 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 
 	client := NewTraqClient(tc)
 	channelHandler := NewChannelHandler(tc, implement.NewChannels(db))
-	userHandker := NewUserHandler(tc, ur)
+	userHandler := NewUserHandler(tc, ur)
 	messagesHandler := NewMessageHandler(tc, implement.NewChannels(db), ur, reading.NewTokenizer())
-	scoreHandler := NewScoreHandler(traq.NewTraqClient(gotraq.NewAPIClient(gotraq.NewConfiguration())), implement.NewScore(db))
-  
+	scoreHandler := NewScoreHandler(tc, implement.NewScore(db))
+
 	oauth := api.Group("/oauth2")
 	oauth.GET("/authorize", authorizeHandler)
 	oauth.GET("/callback", callbackHandler)
 
-	api.PATCH("/channel", channelHandler.patchChennelsHandler)
-	api.PATCH("/user", userHandler.patchUserHandler)
-	api.POST("/post", client.PostScoreHandler)
-	api.POST("/score", scoreHandler.AddScoreHandler)
+	api.PATCH("/channel", channelHandler.patchChennelsHandler, client.checkTraqLoginMiddleware) //TODO: adminのmiddlewareに変える
+	api.PATCH("/user", userHandler.patchUserHandler, client.checkTraqLoginMiddleware) //TODO: adminのmiddlewareに変える
+	api.POST("/post", client.PostScoreHandler, client.checkTraqLoginMiddleware)
+	api.POST("/score", scoreHandler.AddScoreHandler, client.checkTraqLoginMiddleware)
 	api.GET("/me", client.getMeHandler, client.checkTraqLoginMiddleware)
 	api.GET("/message", messagesHandler.getMessagesHandler, client.checkTraqLoginMiddleware)
 
