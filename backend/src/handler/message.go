@@ -1,6 +1,11 @@
 package handler
 
-import "regexp"
+import (
+	"regexp"
+	"unicode/utf8"
+)
+
+const LENGTH_LIMIT = 100
 
 var (
 	ikaRegexp   = regexp.MustCompile(`(い|イ|ｲ)(か|カ|ｶ)`)
@@ -10,4 +15,8 @@ var (
 
 func checkIkaShikaMeka(content string, reg *regexp.Regexp) bool {
 	return reg.MatchString(content)
+}
+
+func checkLength(content string) bool {
+	return utf8.RuneCountInString(content) <= LENGTH_LIMIT
 }
