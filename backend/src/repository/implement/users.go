@@ -23,3 +23,12 @@ func (u *Users) RemakeUsersTable(users []domain.User) error {
 	}
 	return nil
 }
+
+func (u *Users) GetUserNameById(id string) (string, error) {
+	var userName string
+	err := u.db.Get(&userName, "SELECRT name FROM users WHERE id = ?", id)
+	if err != nil {
+		return "", err
+	}
+	return userName, nil
+}
