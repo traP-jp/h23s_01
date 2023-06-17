@@ -41,5 +41,5 @@ func (sh *ScoreHandler) AddScoreHandler(c echo.Context) error {
 	if err := sh.sr.RegisterScore(&score); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-	return c.String(http.StatusOK, "ok")
+	return c.JSON(http.StatusOK, map[string]int{"score": score.Score})
 }
