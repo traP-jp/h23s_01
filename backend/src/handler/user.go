@@ -1,40 +1,40 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
-	"github.com/traP-jp/h23s_01/backend/src/traq"
-
 	"github.com/labstack/echo/v4"
+	"github.com/traP-jp/h23s_01/backend/src/repository"
+	"github.com/traP-jp/h23s_01/backend/src/traq"
 )
 
-type traqClient struct {
+type userHandler struct {
 	tc traq.TraqClient
+	ur repository.UsersRepository
 }
 
-func NewTraqClient(tc traq.TraqClient) *traqClient {
-	return &traqClient{
+func NewUserHandler(tc traq.TraqClient, ur repository.UsersRepository) *userHandler {
+	return &userHandler{
 		tc: tc,
+		ur: ur,
 	}
 }
 
-type getMeResponse struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
-}
-
-func (tc *traqClient) getMeHandler(c echo.Context) error {
+func (uh *userHandler) patchUserHandler(c echo.Context) error {
 	token, err := getToken(c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
-	user, err := tc.tc.GetMe(token)
+
+	users, err := uh.tc.GetAllUsers(token)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: %v", err))
 	}
 
-	return c.JSON(http.StatusOK, getMeResponse{
-		Id:   user.Id.String(),
-		Name: user.Name,
-	})
+	if err := uh.ur.RemakeUsersTable(users); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: %v", err))
+	}
+
+	return c.String(http.StatusOK, "ok")
 }
