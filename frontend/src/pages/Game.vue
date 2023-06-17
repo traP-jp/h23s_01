@@ -5,63 +5,30 @@ import {
   rightList,
   countDownTimer,
   gameTimer,
+  isPenalty,
 } from ".././store.js";
 import { ref, onMounted } from "vue";
 import TimeBar from "../components/TimeBar.vue";
-
-const currentLeftIndex = ref(0);
-const currentMiddleIndex = ref(0);
-const currentRightIndex = ref(0);
-
-const randomInterval = () => {
-  return Math.floor(Math.random() * 5) * 1000;
-};
-
-const currentLeftMessageList = ref([]);
-const currentMiddleMessageList = ref([]);
-const currentRightMessageList = ref([]);
+import CardColumn from "../components/CardColumn.vue";
+import Penalty from "../components/Penalty.vue";
 
 onMounted(() => {
-  addLeftMessage();
-  addMiddleMessage();
-  addRightMessage();
+  addLeftIndex();
+  addMiddleIndex();
+  addRightIndex();
+  countDown();
 });
 
-const addLeftMessage = () => {
-  if (currentLeftIndex.value >= leftList.value.length) {
-    return; // 終了条件
-  }
-  currentLeftMessageList.value.push(leftList.value[currentLeftIndex.value]);
-  currentLeftIndex.value++;
-  setTimeout(addLeftMessage, randomInterval());
-};
-
-const addMiddleMessage = () => {
-  if (currentMiddleIndex.value >= middleList.value.length) {
-    return; // 終了条件
-  }
-  currentMiddleMessageList.value.push(
-    middleList.value[currentMiddleIndex.value]
-  );
-  currentMiddleIndex.value++;
-  setTimeout(addMiddleMessage, randomInterval());
-};
-
-const addRightMessage = () => {
-  if (currentRightIndex.value >= rightList.value.length) {
-    return; // 終了条件
-  }
-  currentRightMessageList.value.push(rightList.value[currentRightIndex.value]);
-  currentRightIndex.value++;
-  setTimeout(addRightMessage, randomInterval());
-};
-
+// 時間管理
 const countDown = () => {
+  countDownTimer.value = 3;
+  gameTimer.value = 30;
   let timer = setInterval(() => {
     countDownTimer.value--;
     if (countDownTimer.value === -1) {
       clearInterval(timer);
       Timer();
+      isStarted.value = true;
     }
   }, 1000);
 };
@@ -75,64 +42,83 @@ const Timer = () => {
   }, 1000);
 };
 
-onMounted(() => {
-  countDown();
-});
+const isStarted = ref(false);
+
+// メッセージ追加の管理
+const leftIndex = ref(0);
+const middleIndex = ref(0);
+const rightIndex = ref(0);
+
+const randomInterval = () => {
+  return 1000 + Math.floor(Math.random() * 1000);
+};
+
+const addLeftIndex = () => {
+  if (leftIndex.value >= leftList.value.length) {
+    return; // 終了条件
+  }
+  leftIndex.value++;
+  setTimeout(addLeftIndex, randomInterval());
+};
+
+const addMiddleIndex = () => {
+  if (middleIndex.value >= middleList.value.length) {
+    return; // 終了条件
+  }
+  middleIndex.value++;
+  setTimeout(addMiddleIndex, randomInterval());
+};
+
+const addRightIndex = () => {
+  if (rightIndex.value >= rightList.value.length) {
+    return; // 終了条件
+  }
+  rightIndex.value++;
+  setTimeout(addRightIndex, randomInterval());
+};
 </script>
 
 <template>
-  <div>
-    <TimeBar />
-  </div>
-  <div class="start">
+  <div v-if="!isStarted" class="count_down">
     <p v-if="countDownTimer > 0" style="font-size: 64px">
       {{ countDownTimer }}
     </p>
     <p v-if="countDownTimer == 0" style="font-size: 64px">START!</p>
   </div>
-
-  <div class="game">
+  <div v-else class="game">
+    <Penalty v-if="isPenalty" />
+    <TimeBar />
     <div class="category">
-      <h1>Game</h1>
-      <div class="lists-container">
-        <div class="list">
-          <div>leftMessages</div>
-          <ul style="text-align: left">
-            <li v-for="message in currentLeftMessageList" :key="message">
-              <div>{{ message }}</div>
-            </li>
-          </ul>
-        </div>
-
-        <div class="list">
-          <div>middleMessages</div>
-          <ul style="text-align: left">
-            <li v-for="message in currentMiddleMessageList" :key="message">
-              <div>{{ message }}</div>
-            </li>
-          </ul>
-        </div>
-
-        <div class="list">
-          <div>rightMessages</div>
-          <ul style="text-align: left">
-            <li v-for="message in currentRightMessageList" :key="message">
-              <div>{{ message }}</div>
-            </li>
-          </ul>
-        </div>
+      <div class="message_columns">
+        <CardColumn
+          :messageList="leftList.slice(0, leftIndex).reverse()"
+          color="#f0f2f5"
+          title="Left"
+          type="game"
+        />
+        <CardColumn
+          :messageList="middleList.slice(0, middleIndex).reverse()"
+          color="#6b7d8a"
+          title="Middle"
+          type="game"
+        />
+        <CardColumn
+          :messageList="rightList.slice(0, rightIndex).reverse()"
+          color="#f0f2f5"
+          title="Right"
+          type="game"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <style>
-.lists-container {
+.message_columns {
   display: flex;
-}
-.list {
-  flex: 1;
-  margin-right: 50px;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
 }
 .start {
   display: flex;
@@ -143,5 +129,8 @@ onMounted(() => {
   text-align: center;
   font-size: 24px;
   font-weight: bold;
+}
+.game {
+  position: relative;
 }
 </style>

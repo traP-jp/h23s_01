@@ -1,8 +1,15 @@
 <script setup>
 import { onMounted } from "vue";
-import { resultIkaList, resultShikaList, resultMekaList } from "../store.js";
+import {
+  resultIkaList,
+  resultShikaList,
+  resultMekaList,
+  ikaScore,
+  shikaScore,
+  mekaScore,
+  totalScore,
+} from "../store.js";
 import CardColumn from "../components/CardColumn.vue";
-
 onMounted(() => {
   for (let i = 0; i < 10; i++) {
     resultIkaList.value.push({
@@ -41,21 +48,32 @@ onMounted(() => {
 <template>
   <div>
     <h1>Result</h1>
+    <div class="scoreboard">
+      <h1>トータルスコア: {{ totalScore }}</h1>
+      <h2>
+        いかスコア：{{ ikaScore }}　しかスコア：{{ shikaScore }}　めかスコア：{{
+          mekaScore
+        }}
+      </h2>
+    </div>
     <div class="message_columns">
       <CardColumn
         :messageList="resultIkaList.reverse()"
         color="#f0f2f5"
         title="いか"
+        type="result"
       />
       <CardColumn
         :messageList="resultShikaList.reverse()"
         color="#6b7d8a"
         title="しか"
+        type="result"
       />
       <CardColumn
         :messageList="resultMekaList.reverse()"
         color="#f0f2f5"
         title="めか"
+        type="result"
       />
     </div>
   </div>
@@ -65,5 +83,11 @@ onMounted(() => {
   display: flex;
   justify-content: space-around;
   width: 100%;
+}
+.scoreboard {
+  border: solid 3px #646fcc;
+  margin: 64px;
+  //width: 500px;
+  border-radius: 10px;
 }
 </style>

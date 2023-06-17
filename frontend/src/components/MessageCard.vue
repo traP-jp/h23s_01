@@ -1,14 +1,77 @@
 <script setup>
+import { ref, defineProps } from "vue";
+import {
+  resultIkaList,
+  resultShikaList,
+  resultMekaList,
+  isPenalty,
+  penaltyTimer,
+} from ".././store.js";
 const props = defineProps({
   message: {
     type: Object,
     required: true,
   },
+  type: {
+    type: String,
+    required: true,
+  },
 });
-const icon = "https://q.trap.jp/api/v3/public/icon/ikura-hamu.png";
+const icon = ref(
+  `https://q.trap.jp/api/v3/public/icon/${props.message.user}.png`
+);
+const isCorrect = ref(false);
+const isIncorrect = ref(false);
+
+const onClickHandler = () => {
+  if (props.type === "game") {
+    if (props.message.ika || props.message.shika || props.message.meka) {
+      isCorrect.value = true;
+      if (props.message.ika) {
+        resultIkaList.value.push(props.message);
+      }
+      if (props.message.shika) {
+        resultShikaList.value.push(props.message);
+      }
+      if (props.message.meka) {
+        resultMekaList.value.push(props.message);
+      }
+    } else {
+      isIncorrect.value = true;
+      isPenalty.value = true;
+      penaltyCount();
+    }
+  } else if (props.type === "result") {
+    // traQのメッセージを新しいタブで開く
+    window.open(
+      `https://q.trap.jp/messages/${props.message.messageId}`,
+      "_blank"
+    );
+  }
+};
+
+// isPenaltyがTrueに切り替わったらカウントダウン
+const penaltyCount = () => {
+  penaltyTimer.value = 3;
+  let timer = setInterval(() => {
+    penaltyTimer.value--;
+    if (penaltyTimer.value === 0) {
+      clearInterval(timer);
+      isPenalty.value = false;
+    }
+  }, 1000);
+};
 </script>
 <template>
-  <div class="message_card">
+  <button
+    :disabled="isCorrect || isIncorrect"
+    :class="[
+      'message_card',
+      { correct_card: isCorrect },
+      { incorrect_card: isIncorrect },
+    ]"
+    @click="onClickHandler()"
+  >
     <div class="message_header">
       <image class="message_icon" :src="icon" />
       <div class="message_user">{{ message.user }}</div>
@@ -16,18 +79,26 @@ const icon = "https://q.trap.jp/api/v3/public/icon/ikura-hamu.png";
     <div class="message_separator" />
     <div class="message_channel">#&nbsp;{{ message.channel }}</div>
     <div class="message_text">{{ message.content }}</div>
-  </div>
+  </button>
 </template>
 <style scoped lang="scss">
 .message_card {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  width: calc(100% - 40px);
+  width: 100%;
   border-radius: 5px;
   padding: 10px 20px;
   margin: 10px 0;
   background-color: white;
+  border: 2px solid white;
+  &:hover {
+    cursor: pointer;
+    border: 2px solid #005bac;
+  }
+  &:visited {
+    border: 2px solid white;
+  }
   .message_header {
     width: 100%;
     display: flex;
@@ -65,5 +136,11 @@ const icon = "https://q.trap.jp/api/v3/public/icon/ikura-hamu.png";
     text-align: left;
     font-size: 16px;
   }
+}
+.correct_card {
+  border-color: #00ff00 !important;
+}
+.incorrect_card {
+  border-color: #ff0000 !important;
 }
 </style>
