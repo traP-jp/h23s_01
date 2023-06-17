@@ -123,7 +123,7 @@ onMounted(() => {
         </ul>
       </div>
     </div>
-    <p>{{ messages.allList }}</p>
+    <p>{{ allList }}</p>
   </div>
 
   <div>
