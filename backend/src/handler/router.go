@@ -13,7 +13,7 @@ import (
 )
 
 func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
-	store, err := mysqlstore.NewMySQLStoreFromConnection(db.DB, "sessions", "/", 60*60*24*14, []byte("secret-token"))
+	store, err := mysqlstore.NewMySQLStoreFromConnection(db.DB, "session", "/", 60*60*24*14, []byte("secret-token"))
 	if err != nil {
 		panic(err)
 	}
@@ -39,7 +39,7 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	oauth.GET("/authorize", authorizeHandler)
 	oauth.GET("/callback", callbackHandler)
 
-	api.GET("/me", client.getMeHandler)
+	api.GET("/me", client.getMeHandler, client.checkTraqLoginMiddleware)
 
 	e.Start(":8080")
 }

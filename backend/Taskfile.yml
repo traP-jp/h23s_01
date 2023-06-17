@@ -9,7 +9,11 @@ tasks:
     dir: ./docker
     cmds:
       - docker compose up --wait
-    
+  rebuild:
+    dir: ./docker
+    cmds:
+      - docker compose down -v
+      - docker compose up --build --wait
   down:
     dir: ./docker
     cmds:
