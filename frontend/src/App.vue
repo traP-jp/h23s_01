@@ -137,11 +137,6 @@ onMounted(() => {
       <div v-if="status === 'result'">
         <Result />
       </div>
-      <select v-model="status">
-        <option value="title">Title</option>
-        <option value="game">Game</option>
-        <option value="result">Result</option>
-      </select>
     </div>
   </div>
 </template>
