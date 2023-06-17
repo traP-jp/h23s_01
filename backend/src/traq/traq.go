@@ -12,6 +12,7 @@ import (
 type TraqClient interface {
 	GetMe(string) (*User, error)
 	GetAllChannels(token, paretChannelName string) ([]domain.Channel, error)
+	GetAllUsers(token string) ([]domain.User, error)
 }
 
 type traqClient struct {
@@ -80,4 +81,22 @@ func (tc *traqClient) GetAllChannels(token, parentChannelName string) ([]domain.
 	}
 
 	return childChannels, nil
+}
+
+func (tc *traqClient) GetAllUsers(token string) ([]domain.User, error) {
+	userList, _, err := tc.client.UserApi.GetUsers(context.WithValue(context.Background(), gotraq.ContextAccessToken, token)).IncludeSuspended(true).Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	var users []domain.User
+	for _, user := range userList {
+		if !user.Bot {
+			uuid := uuid.MustParse(user.Id)
+			name := user.Name
+			users = append(users, domain.User{Id: uuid, Name: name})
+		}
+	}
+
+	return users, nil
 }
