@@ -11,7 +11,7 @@ onMounted(() => {
       user: "ikura-hamu",
       messageId: i,
       channel: "gps/times/ikura-hamu",
-      content: "いかしかめか大学",
+      content: "いかしかめか大学" + i,
       createdAt: "2023-06-14T05:46:02.585Z",
       ika: true,
       shika: true,

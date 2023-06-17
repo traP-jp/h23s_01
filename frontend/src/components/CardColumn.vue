@@ -46,16 +46,20 @@ const props = defineProps({
   .column_contents {
     background-color: v-bind(color);
     padding: 5px 20px;
-
+    height: 500px;
+    overflow-y: hidden;
+    .messsage_cards-move {
+      transition: all 1s ease;
+    }
     .message_cards-enter-active {
-      transition: all 0.5s;
+      transition: all 0.5s ease;
     }
     .message_cards-leave-active {
-      transition: all 0.5s;
+      transition: all 0.5s ease;
     }
     .message_cards-enter-from {
       opacity: 0;
-      transform: translateX(30px);
+      transform: translateX(10px);
     }
   }
 }
