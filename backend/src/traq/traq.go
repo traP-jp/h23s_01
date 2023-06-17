@@ -2,6 +2,7 @@ package traq
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/google/uuid"
@@ -13,6 +14,7 @@ type TraqClient interface {
 	GetMe(string) (*User, error)
 	GetAllChannels(token, paretChannelName string) ([]domain.Channel, error)
 	GetAllUsers(token string) ([]domain.User, error)
+	PostScore(token string, score int) error
 }
 
 type traqClient struct {
@@ -99,4 +101,14 @@ func (tc *traqClient) GetAllUsers(token string) ([]domain.User, error) {
 	}
 
 	return users, nil
+}
+
+func (tc *traqClient) PostScore(token string, score int) error {
+	const H23S_01 string = "ba06634c-f09d-4f84-aa4b-a33af3eb236b"
+	newMessageRequest := gotraq.NewPostMessageRequest(fmt.Sprintf("スコアは%dでした", score))
+	_, _, err := tc.client.MessageApi.PostMessage(context.WithValue(context.Background(), gotraq.ContextAccessToken, token), H23S_01).PostMessageRequest(*newMessageRequest).Execute()
+	if err != nil {
+		return err
+	}
+	return nil
 }
