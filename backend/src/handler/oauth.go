@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	"time"
 
-	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	traqoauth2 "github.com/ras0q/traq-oauth2"
@@ -88,24 +86,6 @@ func callbackHandler(c echo.Context) error {
 	return c.String(http.StatusOK, "ok")
 }
 
-func checkTraqLoginMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		sess, err := session.Get("session", c)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to get session: %v", err.Error()))
-		}
-
-		switch validToken(sess) {
-		case expired:
-			return echo.NewHTTPError(http.StatusUnauthorized, "access token is expired")
-		case noToken:
-			return echo.NewHTTPError(http.StatusUnauthorized, "no token")
-		}
-
-		return next(c)
-	}
-}
-
 type tokenStatus int
 
 const (
@@ -113,20 +93,6 @@ const (
 	expired
 	noToken
 )
-
-func validToken(session *sessions.Session) tokenStatus {
-	_, ok := session.Values["access_token"].(string)
-	if !ok {
-		return noToken
-	}
-
-	expiresAt := session.Values["expires_at"].(time.Time)
-	if expiresAt.Before(time.Now()) {
-		return expired
-	}
-
-	return valid
-}
 
 func getToken(c echo.Context) (string, error) {
 	sess, err := session.Get("session", c)
