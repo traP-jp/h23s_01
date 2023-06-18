@@ -54,7 +54,7 @@ func (ph *postHandler) postScoreHandler(c echo.Context) error {
 
 var writer = config.GetWebhookConfig()
 
-const message = `:@%s: @%s は「[いかしかめかアクティビティズ](https://activities-ecru.vercel.app/)」で %d 点獲得しました！`
+const message = `:@%s: @%s は「[いかしかめかアクティビティズ](https://activities-traq.vercel.app/)」で %d 点獲得しました！`
 
 func postWebhook(content string) error {
 	if writer == nil {
