@@ -66,7 +66,7 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	api.POST("/post", client.postScoreHandler, client.checkTraqLoginMiddleware)
 	api.POST("/score", scoreHandler.registerScoreHandler, client.checkTraqLoginMiddleware)
 	api.GET("/score/highest", scoreHandler.getHighestScoreHandler, client.checkTraqLoginMiddleware)
-  api.GET("/ranking", scoreHandler.getScoreRankingHandler, client.checkTraqLoginMiddleware)
+	api.GET("/ranking", scoreHandler.getScoreRankingHandler, client.checkTraqLoginMiddleware)
 	api.GET("/me", client.getMeHandler, client.checkTraqLoginMiddleware)
 	api.GET("/message", messagesHandler.getMessagesHandler, client.checkTraqLoginMiddleware)
 
