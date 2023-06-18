@@ -143,7 +143,7 @@ const addMiddleIndex = () => {
 };
 
 const addRightIndex = () => {
-  if (rightIndex.value >= rightList.value.length || getTimer.value === 0) {
+  if (rightIndex.value >= rightList.value.length || gameTimer.value === 0) {
     return; // 終了条件
   }
   rightIndex.value++;
