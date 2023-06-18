@@ -112,12 +112,12 @@ watch(
 watch(isEnded, () => {
   if (isEnded.value) {
     gameBgm.pause();
-    gameBgm.currentTime = 0; // bgm停止,終了の合図用の音源再生
+    // gameBgm.currentTime = 0; // bgm停止,終了の合図用の音源再生
     finishWhistle.play();
     // 3秒後にリザルト画面に遷移
     setTimeout(() => {
       status.value = "result";
-    }, 2000);
+    }, 3000);
   }
 });
 // メッセージ追加の管理
