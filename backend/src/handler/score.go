@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -58,7 +60,9 @@ func (sh *ScoreHandler) getHighestScoreHandler(c echo.Context) error {
 	}
 
 	highScore, err := sh.sr.GetHighestScore(user.Id)
-	if err != nil {
+	if errors.Is(err, sql.ErrNoRows) {
+		return echo.NewHTTPError(http.StatusNotFound, err)
+	} else if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
