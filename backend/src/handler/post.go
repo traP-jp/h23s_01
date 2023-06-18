@@ -32,7 +32,7 @@ func (ph *postHandler) postScoreHandler(c echo.Context) error {
 	err := c.Bind(&req)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
-	}
+	}	
 	if _, err := uuid.Parse(req.Id); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "failed to parse user uuid")
 	}

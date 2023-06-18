@@ -126,7 +126,7 @@ const middleIndex = ref(0);
 const rightIndex = ref(0);
 
 const randomInterval = () => {
-  return 1000 + Math.floor(Math.random() * 2000);
+  return 2000 + Math.floor(Math.random() * 1000);
 };
 
 const addLeftIndex = () => {

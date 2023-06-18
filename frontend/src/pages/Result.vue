@@ -26,7 +26,7 @@ const shareMessage = {
   content: `@${user_name.value} は「いかしかめかアクティビティズ」で${totalScore.value}点獲得しました！`,
   user: user_name.value,
 };
-const shareScore = async () => {
+const shareScore = () => {
   // axiosでメッセージ投稿
   /*
   await axios
@@ -47,13 +47,12 @@ const shareScore = async () => {
         });
     });
   */
-  await axios
+  console.log(user_id.value);
+  axios
     .post(`${API_URL}/api/post`, {
       withCredentials: true,
-      body: {
-        id: user_id.value,
-        score: totalScore.value,
-      },
+      id: "c5e40eb1-5f91-4690-9890-a5021fb644b2",
+      score: totalScore.value,
     })
     .then(() => {
       alert("スコアをシェアしました！");
@@ -176,7 +175,7 @@ onMounted(() => {
 }
 
 .share_score {
-  width: 400px;
+  width: 550px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
