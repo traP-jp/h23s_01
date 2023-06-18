@@ -30,9 +30,9 @@ import axios from "axios";
 const isStarted = ref(false);
 const isEnded = ref(false);
 
-const gameBgm = new Audio(gamebgm);
+//const gameBgm = new Audio(gamebgm);
 //const countSound = new Audio(countsound);
-const finishWhistle = new Audio(finishwhistle);
+//const finishWhistle = new Audio(finishwhistle);
 
 onMounted(() => {
   countDown();
@@ -94,7 +94,7 @@ const countDown = () => {
 watch(
   () => isStarted.value && allList.value.length > 0,
   () => {
-    gameBgm.play();
+    //gameBgm.play();
     addLeftIndex();
     addMiddleIndex();
     addRightIndex();
@@ -103,9 +103,9 @@ watch(
       if (gameTimer.value === 0) {
         isEnded.value = true;
         clearInterval(timer);
-        gameBgm.pause();
-        gameBgm.currentTime = 0;
-        finishWhistle.play();
+        //gameBgm.pause();
+        //gameBgm.currentTime = 0;
+        //finishWhistle.play();
         // リザルト画面に遷移
         setTimeout(() => {
           status.value = "result";

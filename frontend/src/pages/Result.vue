@@ -37,11 +37,11 @@ const shareScore = () => {
       alert("スコアをシェアしました！");
     });
 };
-const resultBgm = new Audio(resultbgm);
+//const resultBgm = new Audio(resultbgm);
 
 const replay = () => {
-  resultBgm.pause();
-  resultBgm.currentTime = 0;
+  //resultBgm.pause();
+  //resultBgm.currentTime = 0;
   //const clickSound = new Audio(clicksound);
   //clickSound.volume = 0.2;
   //clickSound.play();
@@ -49,8 +49,8 @@ const replay = () => {
 };
 
 const toTitle = () => {
-  resultBgm.pause();
-  resultBgm.currentTime = 0;
+  //resultBgm.pause();
+  //resultBgm.currentTime = 0;
   //const clickSound = new Audio(clicksound);
   //clickSound.volume = 0.2;
   //clickSound.play();
@@ -58,7 +58,7 @@ const toTitle = () => {
 };
 
 onMounted(() => {
-  resultBgm.play();
+  //resultBgm.play();
 });
 </script>
 <template>
