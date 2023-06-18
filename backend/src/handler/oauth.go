@@ -3,7 +3,6 @@ package handler
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"regexp"
 
@@ -83,8 +82,6 @@ func callbackHandler(c echo.Context) error {
 	sess.Values["expires_at"] = token.Expiry
 
 	sess.Save(c.Request(), c.Response())
-
-	log.Printf("session: %v", c.Response().Header().Get("Set-Cookie"))
 
 	return c.String(http.StatusOK, "ok")
 }
