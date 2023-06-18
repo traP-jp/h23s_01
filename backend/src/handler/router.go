@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/jmoiron/sqlx"
@@ -33,8 +32,6 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 		AllowCredentials: true,
 		AllowHeaders:     []string{echo.HeaderAccessControlAllowOrigin, echo.HeaderOrigin, echo.HeaderXHTTPMethodOverride},
 	}))
-
-	log.Println(config.GetAccessControlAllowOrigin())
 
 	e.GET("/", func(c echo.Context) error {
 		var i int64
