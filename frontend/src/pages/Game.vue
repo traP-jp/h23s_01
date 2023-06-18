@@ -101,12 +101,15 @@ watch(
     let timer = setInterval(() => {
       gameTimer.value--;
       if (gameTimer.value === 0) {
-        //isEnded.value = true;
-        //clearInterval(timer);
-        //gameBgm.pause();
-        //gameBgm.currentTime = 0;
+        isEnded.value = true;
+        clearInterval(timer);
+        gameBgm.pause();
+        gameBgm.currentTime = 0;
         finishWhistle.play();
-        status.value = "result";
+        // リザルト画面に遷移
+        setTimeout(() => {
+          status.value = "result";
+        }, 3000);
       }
     }, 1000);
   }
@@ -140,7 +143,7 @@ const addMiddleIndex = () => {
 };
 
 const addRightIndex = () => {
-  if (rightIndex.value >= rightList.value.length || gameTimer.value === 0) {
+  if (rightIndex.value >= rightList.value.length || getTimer.value === 0) {
     return; // 終了条件
   }
   rightIndex.value++;
