@@ -10,8 +10,8 @@ import {
   shikaScore,
   mekaScore,
 } from ".././store.js";
-import correctsound from "../sound/correctSound.mp3";
-import incorrectsound from "../sound/incorrectSound.mp3";
+//import correctsound from "../sound/correctSound.mp3";
+//import incorrectsound from "../sound/incorrectSound.mp3";
 
 const props = defineProps({
   message: {
@@ -27,8 +27,8 @@ const props = defineProps({
 const isCorrect = ref(false);
 const isIncorrect = ref(false);
 
-const correctSound = new Audio(correctsound);
-const incorrectSound = new Audio(incorrectsound);
+//const correctSound = new Audio(correctsound);
+//const incorrectSound = new Audio(incorrectsound);
 
 // テキストのうち「いか」「しか」「めか」に相当する文字のインデックスを返す
 const getKeywordsIndex = () => {
@@ -44,7 +44,7 @@ const getKeywordsIndex = () => {
 const onClickHandler = () => {
   if (props.type === "game") {
     if (props.message.ika || props.message.shika || props.message.meka) {
-      correctSound.play();
+      //correctSound.play();
       isCorrect.value = true;
       if (props.message.ika) {
         resultIkaList.value.push(props.message);
@@ -59,7 +59,7 @@ const onClickHandler = () => {
         mekaScore.value++;
       }
     } else {
-      incorrectSound.play();
+      //incorrectSound.play();
       isIncorrect.value = true;
       isPenalty.value = true;
       penaltyCount();
