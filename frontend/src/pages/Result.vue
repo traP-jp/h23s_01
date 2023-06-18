@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted } from "vue";
 import clicksound from "../sound/clicksound5.mp3";
-import resultbgm from "../sound/bgm2.mp3";
+//import resultbgm from "../sound/bgm2.mp3";
 import {
   resultIkaList,
   resultShikaList,
@@ -18,7 +18,6 @@ import {
 import CardColumn from "../components/CardColumn.vue";
 import MessageCard from "../components/MessageCard.vue";
 import axios from "axios";
-onMounted(() => {});
 const shareMessage = {
   messageId: "",
   type: "result",
@@ -27,26 +26,6 @@ const shareMessage = {
   user: user_name.value,
 };
 const shareScore = () => {
-  // axiosでメッセージ投稿
-  /*
-  await axios
-    .post(`${API_URL}/api/score`, {
-      withCredentials: true,
-      body: {
-        score: totalScore.value,
-      },
-    })
-    .then(() => {
-      alert("スコアをシェアしました！");
-      axios
-        .get(`${API_URL}/api/score/highest`, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          console.log(res.data);
-        });
-    });
-  */
   console.log(user_id.value);
   axios
     .post(`${API_URL}/api/post`, {
@@ -58,12 +37,11 @@ const shareScore = () => {
       alert("スコアをシェアしました！");
     });
 };
-
-const resultBgm = new Audio(resultbgm);
+//const resultBgm = new Audio(resultbgm);
 
 const replay = () => {
-  resultBgm.pause();
-  resultBgm.currentTime = 0;
+  //resultBgm.pause();
+  //resultBgm.currentTime = 0;
   const clickSound = new Audio(clicksound);
   clickSound.volume = 0.2;
   clickSound.play();
@@ -71,8 +49,8 @@ const replay = () => {
 };
 
 const toTitle = () => {
-  resultBgm.pause();
-  resultBgm.currentTime = 0;
+  //resultBgm.pause();
+  //resultBgm.currentTime = 0;
   const clickSound = new Audio(clicksound);
   clickSound.volume = 0.2;
   clickSound.play();
@@ -80,7 +58,7 @@ const toTitle = () => {
 };
 
 onMounted(() => {
-  resultBgm.play();
+  //resultBgm.play();
 });
 </script>
 <template>
