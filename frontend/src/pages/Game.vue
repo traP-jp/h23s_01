@@ -14,6 +14,7 @@ import {
   mekaScore,
   allList,
   API_URL,
+  status,
 } from ".././store.js";
 import { ref, onMounted, watch } from "vue";
 import TimeBar from "../components/TimeBar.vue";
@@ -22,8 +23,16 @@ import CountDown from "../components/CountDown.vue";
 import Penalty from "../components/Penalty.vue";
 import GameOver from "../components/GameOver.vue";
 import axios from "axios";
+import gamebgm from "../sound/bgm1.mp3";
+import countsound from "../sound/countdown.mp3";
+import finishwhistle from "../sound/finishwhistle.mp3";
 
 const isStarted = ref(false);
+const isEnded = ref(false);
+
+const gameBgm = new Audio(gamebgm);
+const countSound = new Audio(countsound);
+const finishWhistle = new Audio(finishwhistle);
 
 onMounted(() => {
   countDown();
@@ -71,6 +80,9 @@ const countDown = () => {
   gameTimer.value = 30;
   let timer = setInterval(() => {
     countDownTimer.value--;
+    if (countDownTimer.value === 2) {
+      countSound.play(); // 音源が2秒分しかないのでここに入れました
+    }
     if (countDownTimer.value === -1) {
       clearInterval(timer);
       isStarted.value = true;
@@ -82,6 +94,7 @@ const countDown = () => {
 watch(
   () => isStarted.value && allList.value.length > 0,
   () => {
+    gameBgm.play();
     addLeftIndex();
     addMiddleIndex();
     addRightIndex();
@@ -89,11 +102,24 @@ watch(
       gameTimer.value--;
       if (gameTimer.value === 0) {
         clearInterval(timer);
+        isEnded.value = true;
       }
     }, 1000);
   }
 );
 
+// ゲームが終了したらリザルト画面への遷移を行う
+watch(isEnded, () => {
+  if (isEnded.value) {
+    gameBgm.pause();
+    gameBgm.currentTime = 0; // bgm停止,終了の合図用の音源再生
+    finishWhistle.play();
+    // 3秒後にリザルト画面に遷移
+    setTimeout(() => {
+      status.value = "result";
+    }, 2000);
+  }
+});
 // メッセージ追加の管理
 const leftIndex = ref(0);
 const middleIndex = ref(0);

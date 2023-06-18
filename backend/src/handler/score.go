@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -25,6 +27,11 @@ func NewScoreHandler(tc traq.TraqClient, sr repository.ScoreRepository) *ScoreHa
 	}
 }
 
+type registerScoreResponse struct {
+	Score   int `json:"score"`
+	Highest int `json:"highest"`
+}
+
 func (sh *ScoreHandler) registerScoreHandler(c echo.Context) error {
 	token, err := getToken(c)
 	if err != nil {
@@ -43,7 +50,12 @@ func (sh *ScoreHandler) registerScoreHandler(c echo.Context) error {
 	if err := sh.sr.RegisterScore(&score); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, map[string]int{"score": score.Score})
+	highestScore, err := sh.sr.GetHighestScore(user.Id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, &registerScoreResponse{Score: score.Score, Highest: highestScore.Score})
 }
 
 func (sh *ScoreHandler) getHighestScoreHandler(c echo.Context) error {
@@ -58,7 +70,9 @@ func (sh *ScoreHandler) getHighestScoreHandler(c echo.Context) error {
 	}
 
 	highScore, err := sh.sr.GetHighestScore(user.Id)
-	if err != nil {
+	if errors.Is(err, sql.ErrNoRows) {
+		return echo.NewHTTPError(http.StatusNotFound, err)
+	} else if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
@@ -77,6 +91,10 @@ type result struct {
 	UserName  string    `json:"user_name"`
 	Score     int       `json:"score"`
 	CreatedAt time.Time `json:"created_at"`
+}
+type rankingResponse struct {
+	Count   int      `json:"count"`
+	Ranking []result `json:"ranking"`
 }
 
 func (sh *ScoreHandler) getScoreRankingHandler(c echo.Context) error {
@@ -103,15 +121,16 @@ func (sh *ScoreHandler) getScoreRankingHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: %v", err))
 	}
 
-	var responseRanking []result
+	var rankingResponse rankingResponse
+	rankingResponse.Count = limit
 
 	for _, r := range ranking {
 		userInfo, err := sh.tc.GetUserInfo(token, r.UserId)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: %v", err))
 		}
-		responseRanking = append(responseRanking, result{UserName: userInfo.Name, Score: r.Score, CreatedAt: r.CreatedAt})
+		rankingResponse.Ranking = append(rankingResponse.Ranking, result{UserName: userInfo.Name, Score: r.Score, CreatedAt: r.CreatedAt})
 	}
 
-	return c.JSON(http.StatusOK, responseRanking)
+	return c.JSON(http.StatusOK, rankingResponse)
 }

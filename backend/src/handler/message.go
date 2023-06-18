@@ -40,7 +40,7 @@ func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 	countStr := c.QueryParam("count")
 	var count int
 	if countStr == "" {
-		count = 200
+		count = 150
 	} else {
 		c, err := strconv.Atoi(countStr)
 		if err != nil {
@@ -120,7 +120,7 @@ func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 	})
 }
 
-const LENGTH_LIMIT = 100
+const LENGTH_LIMIT = 50
 
 var (
 	ikaRegexp   = regexp.MustCompile(`(い|イ|ｲ)(か|カ|ｶ)`)

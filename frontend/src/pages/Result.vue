@@ -1,5 +1,7 @@
 <script setup>
 import { onMounted } from "vue";
+import clicksound from "../sound/clicksound5.mp3";
+import resultbgm from "../sound/bgm2.mp3";
 import {
   resultIkaList,
   resultShikaList,
@@ -57,6 +59,30 @@ const shareScore = async () => {
       alert("スコアをシェアしました！");
     });
 };
+
+const resultBgm = new Audio(resultbgm);
+
+const replay = () => {
+  resultBgm.pause();
+  resultBgm.currentTime = 0;
+  const clickSound = new Audio(clicksound);
+  clickSound.volume = 0.2;
+  clickSound.play();
+  status.value = "game";
+};
+
+const toTitle = () => {
+  resultBgm.pause();
+  resultBgm.currentTime = 0;
+  const clickSound = new Audio(clicksound);
+  clickSound.volume = 0.2;
+  clickSound.play();
+  status.value = "title";
+};
+
+onMounted(() => {
+  resultBgm.play();
+});
 </script>
 <template>
   <div>
@@ -110,10 +136,8 @@ const shareScore = async () => {
       />
     </div>
     <div class="back_button_container">
-      <button class="back_button" @click="status = 'title'">
-        タイトルに戻る
-      </button>
-      <button class="back_button" @click="status = 'game'">もういちど</button>
+      <button class="back_button" @click="toTitle">タイトルに戻る</button>
+      <button class="back_button" @click="replay">もういちど</button>
     </div>
   </div>
 </template>
