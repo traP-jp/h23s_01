@@ -11,6 +11,7 @@ import {
   status,
   user_name,
   API_URL,
+  user_id,
 } from "../store.js";
 import CardColumn from "../components/CardColumn.vue";
 import MessageCard from "../components/MessageCard.vue";
@@ -48,6 +49,7 @@ const shareScore = async () => {
     .post(`${API_URL}/api/post`, {
       withCredentials: true,
       body: {
+        id: user_id.value,
         score: totalScore.value,
       },
     })
