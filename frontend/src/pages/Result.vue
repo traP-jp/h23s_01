@@ -11,7 +11,32 @@ import {
   status,
 } from "../store.js";
 import CardColumn from "../components/CardColumn.vue";
-onMounted(() => {});
+import clicksound from "../sound/clicksound5.mp3";
+import resultbgm from "../sound/bgm2.mp3";
+
+const resultBgm = new Audio(resultbgm);
+
+const replay = () => {
+  resultBgm.pause();
+  resultBgm.currentTime = 0;
+  const clickSound = new Audio(clicksound);
+  clickSound.volume = 0.2;
+  clickSound.play();
+  status.value = "game";
+};
+
+const toTitle = () => {
+  resultBgm.pause();
+  resultBgm.currentTime = 0;
+  const clickSound = new Audio(clicksound);
+  clickSound.volume = 0.2;
+  clickSound.play();
+  status.value = "title";
+};
+
+onMounted(() => {
+  resultBgm.play();
+});
 </script>
 <template>
   <div>
@@ -57,10 +82,8 @@ onMounted(() => {});
       />
     </div>
     <div class="back_button_container">
-      <button class="back_button" @click="status = 'title'">
-        タイトルに戻る
-      </button>
-      <button class="back_button" @click="status = 'game'">もういちど</button>
+      <button class="back_button" @click="toTitle">タイトルに戻る</button>
+      <button class="back_button" @click="replay">もういちど</button>
     </div>
   </div>
 </template>
