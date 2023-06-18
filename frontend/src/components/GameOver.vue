@@ -1,14 +1,3 @@
-<script setup>
-import { onMounted } from "vue";
-import { status } from "../store.js";
-
-onMounted(() => {
-  // 3秒後にリザルト画面に遷移
-  setTimeout(() => {
-    status.value = "result";
-  }, 3000);
-});
-</script>
 <template>
   <div class="gameover">
     <div class="gameover_text">ゲーム終了！</div>
@@ -31,3 +20,4 @@ onMounted(() => {
   }
 }
 </style>
+t 
