@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/jmoiron/sqlx"
@@ -31,6 +32,8 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
 		AllowCredentials: true,
 	}))
+
+	fmt.Println(config.GetAccessControlAllowOrigin())
 
 	e.GET("/", func(c echo.Context) error {
 		var i int64
