@@ -1,35 +1,50 @@
 package handler
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/traP-jp/h23s_01/backend/src/config"
+	"github.com/traP-jp/h23s_01/backend/src/repository"
 )
 
-type scoreBinder struct {
-	Score int `json:"score"`
+type scoreRequestBody struct {
+	Score int    `json:"score"`
+	Id    string `json:"id"`
 }
 
-func (tc *traqClient) postScoreHandler(c echo.Context) error {
-	token, err := getToken(c)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, err)
-	}
+type postHandler struct {
+	ur repository.UsersRepository
+}
 
-	var score scoreBinder
-	err = c.Bind(&score)
+func NewPostHandler(ur repository.UsersRepository) *postHandler {
+	return &postHandler{
+		ur: ur,
+	}
+}
+
+func (ph *postHandler) postScoreHandler(c echo.Context) error {
+	var req scoreRequestBody
+	err := c.Bind(&req)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
+	if _, err := uuid.Parse(req.Id); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "failed to parse user uuid")
+	}
 
-	user, err := tc.tc.GetMe(token)
-	name := user.Name
+	name, err := ph.ur.GetUserNameById(req.Id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-	err = postWebhook(fmt.Sprintf(message, name, name, score.Score))
+	err = postWebhook(fmt.Sprintf(message, name, name, req.Score))
 
 	return c.String(http.StatusOK, "ok")
 }
