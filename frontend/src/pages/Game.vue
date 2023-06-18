@@ -101,16 +101,12 @@ watch(
     let timer = setInterval(() => {
       gameTimer.value--;
       if (gameTimer.value === 0) {
-        isEnded.value = true;
-        clearInterval(timer);
-        gameBgm.pause();
-        gameBgm.currentTime = 0;
+        //isEnded.value = true;
+        //clearInterval(timer);
+        //gameBgm.pause();
+        //gameBgm.currentTime = 0;
         finishWhistle.play();
-        // リザルト画面に遷移
-        let timer2 = setInterval(() => {
-          clearInterval(timer2);
-          status.value = "result";
-        }, 3000);
+        status.value = "result";
       }
     }, 1000);
   }
