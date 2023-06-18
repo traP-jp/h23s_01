@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -72,7 +71,6 @@ func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 			ruby := mh.r.GetReading(messages[i].GetContent())
 			userName, err := mh.ur.GetUserNameById(messages[i].UserId)
 			if err != nil {
-				fmt.Println(messages[i].UserId)
 				return echo.NewHTTPError(http.StatusInternalServerError, err)
 			}
 			content := messages[i].GetContent()
@@ -112,7 +110,6 @@ func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 	messagesRes = append(messagesRes, messagesHit...)
 	messagesRes = append(messagesRes, messagesNot...)
 	messagesRes = messagesRes[:count]
-	fmt.Println(len(messagesHit))
 
 	return c.JSON(http.StatusOK, getMessagesRes{
 		Count:    len(messagesRes),
