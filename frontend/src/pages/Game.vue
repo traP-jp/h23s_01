@@ -107,7 +107,8 @@ watch(
         gameBgm.currentTime = 0;
         finishWhistle.play();
         // リザルト画面に遷移
-        setTimeout(() => {
+        let timer2 = setInterval(() => {
+          clearInterval(timer2);
           status.value = "result";
         }, 3000);
       }
