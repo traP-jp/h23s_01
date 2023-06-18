@@ -17,7 +17,7 @@ onMounted(() => {
         /* CORS回避 */
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Origin": API_URL,
         },
       })
       .then((res) => {
@@ -33,7 +33,7 @@ onMounted(() => {
             /* CORS回避 */
             headers: {
               "Content-Type": "application/json",
-              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Origin": API_URL,
             },
           })
           .then((res) => {
@@ -44,7 +44,7 @@ onMounted(() => {
                 /* CORS回避 */
                 headers: {
                   "Content-Type": "application/json",
-                  "Access-Control-Allow-Origin": "*",
+                  "Access-Control-Allow-Origin": API_URL,
                 },
               })
               .then((res) => {
@@ -61,7 +61,7 @@ onMounted(() => {
         /* CORS回避 */
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Origin": API_URL,
         },
       })
       .then((res) => {
