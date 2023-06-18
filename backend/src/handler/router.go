@@ -28,7 +28,7 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 		Format: "${status} |${time_rfc3339} |${method} |${host}${uri}\t|error:\"${error}\"\t|latency:${latency_human}\n",
 	}))
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{config.GetAccessControlAllowOrigin()},
+		AllowOrigins:     []string{"https://activities-traq.vercel.app/"},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
 		AllowCredentials: true,
 	}))
