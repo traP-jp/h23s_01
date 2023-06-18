@@ -101,26 +101,22 @@ watch(
     let timer = setInterval(() => {
       gameTimer.value--;
       if (gameTimer.value === 0) {
-        clearInterval(timer);
         isEnded.value = true;
+        clearInterval(timer);
+        gameBgm.pause();
+        gameBgm.currentTime = 0;
+        finishWhistle.play();
+        // リザルト画面に遷移
+        setTimeout(() => {
+          status.value = "result";
+        }, 3000);
       }
     }, 1000);
   }
 );
 
 // ゲームが終了したらリザルト画面への遷移を行う
-watch(
-  () => isEnded.value,
-  () => {
-    gameBgm.pause();
-    gameBgm.currentTime = 0;
-    finishWhistle.play();
-    // リザルト画面に遷移
-    setTimeout(() => {
-      status.value = "result";
-    }, 1000);
-  }
-);
+
 // メッセージ追加の管理
 const leftIndex = ref(0);
 const middleIndex = ref(0);
