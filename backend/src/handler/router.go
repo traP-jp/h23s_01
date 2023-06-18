@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/srinathgs/mysqlstore"
+	"github.com/traP-jp/h23s_01/backend/src/config"
 	"github.com/traP-jp/h23s_01/backend/src/reading"
 	"github.com/traP-jp/h23s_01/backend/src/repository/implement"
 	"github.com/traP-jp/h23s_01/backend/src/traq"
@@ -22,9 +23,11 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 
 	e.Use(session.Middleware(store))
 	e.Use(middleware.Recover())
-	e.Use(middleware.Logger())
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "${status} |${time_rfc3339} |${method} |${host}${uri}\t|error:\"${error}\"\t|latency:${latency_human}\n",
+	}))
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowOrigins:     []string{config.GetAccessControlAllowOrigin()},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
 		AllowCredentials: true,
 	}))
@@ -53,12 +56,17 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	oauth.GET("/authorize", authorizeHandler)
 	oauth.GET("/callback", callbackHandler)
 
-	api.PATCH("/channel", channelHandler.patchChennelsHandler)
-	api.PATCH("/user", userHandler.patchUserHandler)
-	api.POST("/post", client.postScoreHandler)
-	api.POST("/score", scoreHandler.registerScoreHandler)
-	api.GET("/score/highest", scoreHandler.getHighestScoreHandler)
-	api.GET("/ranking", scoreHandler.getScoreRankingHandler)
+	admin := api.Group("/admin")
+	if config.GetMode() == "production" {
+		admin.Use(client.checkAdminMiddleware)
+	}
+	admin.PATCH("/channel", channelHandler.patchChennelsHandler)
+	admin.PATCH("/user", userHandler.patchUserHandler)
+
+	api.POST("/post", client.postScoreHandler, client.checkTraqLoginMiddleware)
+	api.POST("/score", scoreHandler.registerScoreHandler, client.checkTraqLoginMiddleware)
+	api.GET("/score/highest", scoreHandler.getHighestScoreHandler, client.checkTraqLoginMiddleware)
+  api.GET("/ranking", scoreHandler.getScoreRankingHandler, client.checkTraqLoginMiddleware)
 	api.GET("/me", client.getMeHandler, client.checkTraqLoginMiddleware)
 	api.GET("/message", messagesHandler.getMessagesHandler, client.checkTraqLoginMiddleware)
 

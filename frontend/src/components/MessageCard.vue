@@ -6,6 +6,9 @@ import {
   resultMekaList,
   isPenalty,
   penaltyTimer,
+  ikaScore,
+  shikaScore,
+  mekaScore,
 } from ".././store.js";
 const props = defineProps({
   message: {
@@ -17,11 +20,20 @@ const props = defineProps({
     required: true,
   },
 });
-const icon = ref(
-  `https://q.trap.jp/api/v3/public/icon/${props.message.user}.png`
-);
+
 const isCorrect = ref(false);
 const isIncorrect = ref(false);
+
+// テキストのうち「いか」「しか」「めか」に相当する文字のインデックスを返す
+const getKeywordsIndex = () => {
+  return props.message.content.indexOf("いか") !== -1
+    ? props.message.content.indexOf("いか")
+    : props.message.content.indexOf("しか") !== -1
+    ? props.message.content.indexOf("しか")
+    : props.message.content.indexOf("めか") !== -1
+    ? props.message.content.indexOf("めか")
+    : -2;
+};
 
 const onClickHandler = () => {
   if (props.type === "game") {
@@ -29,12 +41,15 @@ const onClickHandler = () => {
       isCorrect.value = true;
       if (props.message.ika) {
         resultIkaList.value.push(props.message);
+        ikaScore.value++;
       }
       if (props.message.shika) {
         resultShikaList.value.push(props.message);
+        shikaScore.value++;
       }
       if (props.message.meka) {
         resultMekaList.value.push(props.message);
+        mekaScore.value++;
       }
     } else {
       isIncorrect.value = true;
@@ -72,17 +87,35 @@ const penaltyCount = () => {
     ]"
     @click="onClickHandler()"
   >
+    <div v-if="isCorrect" class="correct_text">正解！</div>
+    <div v-else-if="isIncorrect" class="incorrect_text">不正解！</div>
     <div class="message_header">
-      <image class="message_icon" :src="icon" />
+      <img
+        class="message_icon"
+        :src="`https://q.trap.jp/api/v3/public/icon/${props.message.user}`"
+      />
       <div class="message_user">{{ message.user }}</div>
     </div>
     <div class="message_separator" />
     <div class="message_channel">#&nbsp;{{ message.channel }}</div>
-    <div class="message_text">{{ message.content }}</div>
+    <div class="message_text">
+      <template v-for="(char, index) in message.content">
+        <span
+          :class="{
+            keyword_char:
+              (isCorrect || type === 'result') &&
+              (index === getKeywordsIndex() ||
+                index === getKeywordsIndex() + 1),
+          }"
+          >{{ char }}</span
+        >
+      </template>
+    </div>
   </button>
 </template>
 <style scoped lang="scss">
 .message_card {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -135,6 +168,10 @@ const penaltyCount = () => {
     width: 100%;
     text-align: left;
     font-size: 16px;
+    .keyword_char {
+      color: #ff0000;
+      font-weight: bold;
+    }
   }
 }
 .correct_card {
@@ -142,5 +179,17 @@ const penaltyCount = () => {
 }
 .incorrect_card {
   border-color: #ff0000 !important;
+}
+.correct_text {
+  position: absolute;
+  font-size: 32px;
+  font-weight: bold;
+  color: #00ff00;
+}
+.incorrect_text {
+  position: absolute;
+  font-size: 32px;
+  font-weight: bold;
+  color: #ff0000;
 }
 </style>

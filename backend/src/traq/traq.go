@@ -101,6 +101,8 @@ func (tc *traqClient) GetAllChannels(token, parentChannelName string) ([]domain.
 	return childChannels, nil
 }
 
+const MESSAGES_PER_CHANNEL = 100
+
 func (tc *traqClient) GetChannelMessages(token, channelId string) ([]gotraq.Message, error) {
 	messages, _, err := tc.client.MessageApi.
 		SearchMessages(context.WithValue(context.Background(), gotraq.ContextAccessToken, token)).
@@ -114,17 +116,17 @@ func (tc *traqClient) GetChannelMessages(token, channelId string) ([]gotraq.Mess
 
 	var offset int32
 	totalCount := messages.GetTotalHits()
-	if totalCount <= 100 {
+	if totalCount <= MESSAGES_PER_CHANNEL {
 		offset = 0
 	} else {
 		r := rand.New(rand.NewSource(time.Now().UnixNano()))
 		r.Seed(time.Now().UnixNano())
-		offset = rand.Int31n(int32(totalCount) - 100)
+		offset = rand.Int31n(int32(totalCount) - MESSAGES_PER_CHANNEL)
 	}
 
 	messages, _, err = tc.client.MessageApi.
 		SearchMessages(context.WithValue(context.Background(), gotraq.ContextAccessToken, token)).
-		Limit(100).
+		Limit(MESSAGES_PER_CHANNEL).
 		Offset(offset).
 		In(channelId).
 		Bot(false).
