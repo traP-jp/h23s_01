@@ -51,7 +51,7 @@ const shareScore = () => {
   axios
     .post(`${API_URL}/api/post`, {
       withCredentials: true,
-      id: "c5e40eb1-5f91-4690-9890-a5021fb644b2",
+      id: user_id.value,
       score: totalScore.value,
     })
     .then(() => {
