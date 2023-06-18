@@ -27,6 +27,11 @@ func NewScoreHandler(tc traq.TraqClient, sr repository.ScoreRepository) *ScoreHa
 	}
 }
 
+type registerScoreResponse struct {
+	Score   int `json:"score"`
+	Highest int `json:"highest"`
+}
+
 func (sh *ScoreHandler) registerScoreHandler(c echo.Context) error {
 	token, err := getToken(c)
 	if err != nil {
@@ -45,7 +50,12 @@ func (sh *ScoreHandler) registerScoreHandler(c echo.Context) error {
 	if err := sh.sr.RegisterScore(&score); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, map[string]int{"score": score.Score})
+	highestScore, err := sh.sr.GetHighestScore(user.Id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, &registerScoreResponse{Score: score.Score, Highest: highestScore.Score})
 }
 
 func (sh *ScoreHandler) getHighestScoreHandler(c echo.Context) error {
