@@ -2,8 +2,6 @@
 import { status } from "../store";
 import { user_name } from "../store";
 import clicksound from "../sound/clicksound5.mp3";
-import { onMounted } from "vue";
-import axios from "axios";
 
 const play = () => {
   const clickSound = new Audio(clicksound);
@@ -11,11 +9,6 @@ const play = () => {
   clickSound.play();
   status.value = "game";
 };
-onMounted(() => {
-  axios
-    .get("http://localhost:8080/api/score/highest")
-    .then((response) => console.log(response));
-});
 </script>
 <template>
   <div>
