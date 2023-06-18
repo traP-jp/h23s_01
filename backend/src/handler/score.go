@@ -92,6 +92,10 @@ type result struct {
 	Score     int       `json:"score"`
 	CreatedAt time.Time `json:"created_at"`
 }
+type rankingResponse struct {
+	Count   int      `json:"count"`
+	Ranking []result `json:"ranking"`
+}
 
 func (sh *ScoreHandler) getScoreRankingHandler(c echo.Context) error {
 	token, err := getToken(c)
@@ -117,15 +121,16 @@ func (sh *ScoreHandler) getScoreRankingHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: %v", err))
 	}
 
-	var responseRanking []result
+	var rankingResponse rankingResponse
+	rankingResponse.Count = limit
 
 	for _, r := range ranking {
 		userInfo, err := sh.tc.GetUserInfo(token, r.UserId)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: %v", err))
 		}
-		responseRanking = append(responseRanking, result{UserName: userInfo.Name, Score: r.Score, CreatedAt: r.CreatedAt})
+		rankingResponse.Ranking = append(rankingResponse.Ranking, result{UserName: userInfo.Name, Score: r.Score, CreatedAt: r.CreatedAt})
 	}
 
-	return c.JSON(http.StatusOK, responseRanking)
+	return c.JSON(http.StatusOK, rankingResponse)
 }
