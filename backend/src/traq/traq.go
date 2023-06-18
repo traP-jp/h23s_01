@@ -50,6 +50,7 @@ func (tc *traqClient) GetMe(token string) (*User, error) {
 }
 
 func (tc *traqClient) GetUserInfo(token string, id uuid.UUID) (*User, error) {
+	fmt.Println(id.String())
 	user, _, err := tc.client.UserApi.
 		GetUser(context.WithValue(context.Background(), gotraq.ContextAccessToken, token), id.String()).
 		Execute()

@@ -100,15 +100,15 @@ func (sh *ScoreHandler) getScoreRankingHandler(c echo.Context) error {
 
 	ranking, err := sh.sr.GetScoreRandking(limit)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: %v", err))
 	}
 
 	var responseRanking []result
 
 	for _, r := range ranking {
-		userInfo, err := sh.tc.GetUserInfo(token, r.Id)
+		userInfo, err := sh.tc.GetUserInfo(token, r.UserId)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: %v", err))
 		}
 		responseRanking = append(responseRanking, result{UserName: userInfo.Name, Score: r.Score, CreatedAt: r.CreatedAt})
 	}
