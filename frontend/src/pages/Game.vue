@@ -78,9 +78,10 @@ const countDown = () => {
   }, 1000);
 };
 
-// ゲームが開始したらwatchでゲーム時間のカウントを開始する
-watch(isStarted, () => {
-  if (isStarted.value) {
+// ゲームが開始＆allListの取得が完了したらwatchでゲーム時間のカウントを開始する
+watch(
+  () => isStarted.value && allList.value.length > 0,
+  () => {
     addLeftIndex();
     addMiddleIndex();
     addRightIndex();
@@ -91,7 +92,7 @@ watch(isStarted, () => {
       }
     }, 1000);
   }
-});
+);
 
 // メッセージ追加の管理
 const leftIndex = ref(0);
