@@ -90,9 +90,10 @@ const countDown = () => {
   }, 1000);
 };
 
-// ゲームが開始したらwatchでゲーム時間のカウントを開始する
-watch(isStarted, () => {
-  if (isStarted.value) {
+// ゲームが開始＆allListの取得が完了したらwatchでゲーム時間のカウントを開始する
+watch(
+  () => isStarted.value && allList.value.length > 0,
+  () => {
     gameBgm.play();
     addLeftIndex();
     addMiddleIndex();
@@ -105,7 +106,7 @@ watch(isStarted, () => {
       }
     }, 1000);
   }
-});
+);
 
 // ゲームが終了したらリザルト画面への遷移を行う
 watch(isEnded, () => {

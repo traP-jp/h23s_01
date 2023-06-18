@@ -28,8 +28,9 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	}))
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     []string{config.GetAccessControlAllowOrigin()},
-		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch, http.MethodOptions},
 		AllowCredentials: true,
+		AllowHeaders:     []string{echo.HeaderAccessControlAllowOrigin, echo.HeaderOrigin, echo.HeaderXHTTPMethodOverride},
 	}))
 
 	e.GET("/", func(c echo.Context) error {
@@ -66,6 +67,7 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	api.POST("/post", client.postScoreHandler, client.checkTraqLoginMiddleware)
 	api.POST("/score", scoreHandler.registerScoreHandler, client.checkTraqLoginMiddleware)
 	api.GET("/score/highest", scoreHandler.getHighestScoreHandler, client.checkTraqLoginMiddleware)
+  api.GET("/ranking", scoreHandler.getScoreRankingHandler, client.checkTraqLoginMiddleware)
 	api.GET("/me", client.getMeHandler, client.checkTraqLoginMiddleware)
 	api.GET("/message", messagesHandler.getMessagesHandler, client.checkTraqLoginMiddleware)
 

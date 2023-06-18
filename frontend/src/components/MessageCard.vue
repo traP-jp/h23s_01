@@ -127,7 +127,7 @@ const penaltyCount = () => {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  width: 100%;
+  width: 100% !important;
   border-radius: 5px;
   padding: 10px 20px;
   margin: 10px 0;
@@ -176,6 +176,7 @@ const penaltyCount = () => {
     width: 100%;
     text-align: left;
     font-size: 16px;
+    word-wrap: break-word;
     .keyword_char {
       color: #ff0000;
       font-weight: bold;
