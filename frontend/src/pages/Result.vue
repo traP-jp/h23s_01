@@ -9,9 +9,17 @@ import {
   mekaScore,
   totalScore,
   status,
+  user_name,
 } from "../store.js";
 import CardColumn from "../components/CardColumn.vue";
+import MessageCard from "../components/MessageCard.vue";
 onMounted(() => {});
+const shareMessage = {
+  messageId: "",
+  channel: "random/gamers/ikashikameka",
+  content: `いかしかめかゲームで遊んだよ！\nいか: ${ikaScore.value}しか: ${shikaScore.value}めか: ${mekaScore.value}\nトータルスコア: ${totalScore.value}\n#いかしかめかゲーム`,
+  user: user_name.value,
+};
 </script>
 <template>
   <div>
@@ -28,6 +36,9 @@ onMounted(() => {});
         <img class="scoreboard_detail_icon" src="/meka.svg" />
         <div class="scoreboard_detail_score">{{ mekaScore }}</div>
       </div>
+    </div>
+    <div class="share-score">
+      <MessageCard :message="shareMessage" :type="game" />
     </div>
     <div class="messages_title">今回出会ったメッセージ</div>
     <div class="messages_description">
@@ -96,6 +107,13 @@ onMounted(() => {});
       margin: 0 20px;
     }
   }
+}
+
+.share-score {
+  width: 400px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 60px;
 }
 .messages_title {
   font-size: 32px;
