@@ -72,7 +72,7 @@ onMounted(() => {});
   margin-bottom: 60px;
 }
 .scoreboard {
-  background-color: #e0e2ff;
+  background-color: #d5e7ff;
   margin: 60px;
   padding: 32px;
   border-radius: 10px;
