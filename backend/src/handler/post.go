@@ -45,6 +45,9 @@ func (ph *postHandler) postScoreHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 	err = postWebhook(fmt.Sprintf(message, name, name, req.Score))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
 
 	return c.String(http.StatusOK, "ok")
 }
