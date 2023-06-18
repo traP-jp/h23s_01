@@ -35,3 +35,11 @@ func (s *Score) GetHighestScore(userId uuid.UUID) (*domain.Score, error) {
 	fmt.Printf("%+v", highScore)
 	return &highScore, nil
 }
+
+func (s *Score) GetScoreRandking(limit int) ([]domain.Score, error) {
+	var ranking []domain.Score
+	if err := s.db.Select(&ranking, "SELECT * FROM scores ORDER BY score DESC LIMIT ?", limit); err != nil {
+		return nil, err
+	}
+	return ranking, nil
+}

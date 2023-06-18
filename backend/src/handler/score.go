@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -70,4 +71,47 @@ func (sh *ScoreHandler) getHighestScoreHandler(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, resp)
+}
+
+type result struct {
+	UserName  string    `json:"user_name"`
+	Score     int       `json:"score"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+func (sh *ScoreHandler) getScoreRankingHandler(c echo.Context) error {
+	token, err := getToken(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, err)
+	}
+
+	strLimit := c.QueryParam("limit")
+	limit, err := strconv.Atoi(strLimit)
+	if err != nil {
+		if strLimit == "" {
+			limit = 10
+		} else {
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+	}
+	if limit < 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, "limit should be positive number")
+	}
+
+	ranking, err := sh.sr.GetScoreRandking(limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+
+	var responseRanking []result
+
+	for _, r := range ranking {
+		userInfo, err := sh.tc.GetUserInfo(token, r.Id)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
+		}
+		responseRanking = append(responseRanking, result{UserName: userInfo.Name, Score: r.Score, CreatedAt: r.CreatedAt})
+	}
+
+	return c.JSON(http.StatusOK, responseRanking)
 }
