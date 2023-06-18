@@ -69,25 +69,23 @@ const play = () => {
     font-weight: bold;
   }
 }
-  .howtoplay {
-    padding: 10px;
-    padding-top: 0px;
-    border: solid 3px #646fcc;
-    border-radius: 10px;
-    margin: 30px;
-    width: 895px;
-  }
-  .howtoplaytext {
-    text-align: left;
-    line-height: 30px;
-  }
-  hilight {
-    color: #f01d2e;
-    font-weight: bold;
-  }
-  hilight2 {
-    color: #f5b847;
-    font-weight: bold;
-  }
-
+.howtoplay {
+  padding: 0 20px 10px;
+  border: solid 3px #005bac;
+  border-radius: 10px;
+  margin: 40px;
+  width: 900px;
+}
+.howtoplaytext {
+  text-align: left;
+  line-height: 30px;
+}
+hilight {
+  color: #f01d2e;
+  font-weight: bold;
+}
+hilight2 {
+  color: #f5b847;
+  font-weight: bold;
+}
 </style>
