@@ -1,12 +1,12 @@
 <script setup>
 import { status } from "../store";
 import { user_name } from "../store";
-import clicksound from "../sound/clicksound5.mp3";
+//import clicksound from "../sound/clicksound5.mp3";
 
 const play = () => {
-  const clickSound = new Audio(clicksound);
-  clickSound.volume = 0.2;
-  clickSound.play();
+  //const clickSound = new Audio(clicksound);
+  //clickSound.volume = 0.2;
+  //clickSound.play();
   status.value = "game";
 };
 </script>
