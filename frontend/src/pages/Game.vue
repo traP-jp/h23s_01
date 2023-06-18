@@ -127,7 +127,7 @@ const randomInterval = () => {
 };
 
 const addLeftIndex = () => {
-  if (leftIndex.value >= leftList.value.length) {
+  if (leftIndex.value >= leftList.value.length || gameTimer.value === 0) {
     return; // 終了条件
   }
   leftIndex.value++;
@@ -135,7 +135,7 @@ const addLeftIndex = () => {
 };
 
 const addMiddleIndex = () => {
-  if (middleIndex.value >= middleList.value.length) {
+  if (middleIndex.value >= middleList.value.length || gameTimer.value === 0) {
     return; // 終了条件
   }
   middleIndex.value++;
@@ -143,7 +143,7 @@ const addMiddleIndex = () => {
 };
 
 const addRightIndex = () => {
-  if (rightIndex.value >= rightList.value.length) {
+  if (rightIndex.value >= rightList.value.length || gameTimer.value === 0) {
     return; // 終了条件
   }
   rightIndex.value++;
