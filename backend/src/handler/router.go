@@ -28,8 +28,9 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	}))
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     []string{config.GetAccessControlAllowOrigin()},
-		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch},
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch, http.MethodOptions},
 		AllowCredentials: true,
+		AllowHeaders:     []string{echo.HeaderAccessControlAllowOrigin, echo.HeaderOrigin, echo.HeaderXHTTPMethodOverride},
 	}))
 
 	e.GET("/", func(c echo.Context) error {
