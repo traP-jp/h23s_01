@@ -14,6 +14,11 @@ onMounted(() => {
     axios
       .get(`${API_URL}/api/me`, {
         withCredentials: true,
+        /* CORS回避 */
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
       })
       .then((res) => {
         console.log(res.data);
@@ -25,12 +30,22 @@ onMounted(() => {
         axios
           .get(`${API_URL}/api/oauth2/callback?${searchParams}`, {
             withCredentials: true,
+            /* CORS回避 */
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
           })
           .then((res) => {
             console.log(res);
             axios
               .get(`${API_URL}/api/me`, {
                 withCredentials: true,
+                /* CORS回避 */
+                headers: {
+                  "Content-Type": "application/json",
+                  "Access-Control-Allow-Origin": "*",
+                },
               })
               .then((res) => {
                 console.log(res.data);
@@ -43,6 +58,11 @@ onMounted(() => {
     axios
       .get(`${API_URL}/api/me`, {
         withCredentials: true,
+        /* CORS回避 */
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
       })
       .then((res) => {
         console.log(res.data);
