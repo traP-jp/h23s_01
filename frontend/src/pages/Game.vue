@@ -111,8 +111,8 @@ watch(
 // ゲームが終了したらリザルト画面への遷移を行う
 watch(isEnded, () => {
   if (isEnded.value) {
-    gameBgm.pause();
-    gameBgm.currentTime = 0; // bgm停止,終了の合図用の音源再生
+    //gameBgm.pause();
+    //gameBgm.currentTime = 0; // bgm停止,終了の合図用の音源再生
     finishWhistle.play();
     // 3秒後にリザルト画面に遷移
     setTimeout(() => {
