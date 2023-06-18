@@ -117,7 +117,7 @@ watch(isEnded, () => {
     // 3秒後にリザルト画面に遷移
     setTimeout(() => {
       status.value = "result";
-    }, 2000);
+    }, 1000);
   }
 });
 // メッセージ追加の管理
