@@ -10,15 +10,50 @@ import {
   totalScore,
   status,
   user_name,
+  API_URL,
 } from "../store.js";
 import CardColumn from "../components/CardColumn.vue";
 import MessageCard from "../components/MessageCard.vue";
+import axios from "axios";
 onMounted(() => {});
 const shareMessage = {
   messageId: "",
+  type: "result",
   channel: "random/gamers/ikashikameka",
-  content: `いかしかめかゲームで遊んだよ！\nいか: ${ikaScore.value}しか: ${shikaScore.value}めか: ${mekaScore.value}\nトータルスコア: ${totalScore.value}\n#いかしかめかゲーム`,
+  content: `@${user_name.value} は「いかしかめかアクティビティズ」で${totalScore.value}点獲得しました！`,
   user: user_name.value,
+};
+const shareScore = async () => {
+  // axiosでメッセージ投稿
+  /*
+  await axios
+    .post(`${API_URL}/api/score`, {
+      withCredentials: true,
+      body: {
+        score: totalScore.value,
+      },
+    })
+    .then(() => {
+      alert("スコアをシェアしました！");
+      axios
+        .get(`${API_URL}/api/score/highest`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          console.log(res.data);
+        });
+    });
+  */
+  await axios
+    .post(`${API_URL}/api/post`, {
+      withCredentials: true,
+      body: {
+        score: totalScore.value,
+      },
+    })
+    .then(() => {
+      alert("スコアをシェアしました！");
+    });
 };
 </script>
 <template>
@@ -37,8 +72,13 @@ const shareMessage = {
         <div class="scoreboard_detail_score">{{ mekaScore }}</div>
       </div>
     </div>
-    <div class="share-score">
+    <div class="share_score">
+      <div class="share_header">
+        <img class="share_icon" src="/traq.png" />
+        <div class="share_title">でスコアをシェアしよう！</div>
+      </div>
       <MessageCard :message="shareMessage" :type="game" />
+      <button class="submit_button" @click="shareScore()">シェアする</button>
     </div>
     <div class="messages_title">今回出会ったメッセージ</div>
     <div class="messages_description">
@@ -109,11 +149,42 @@ const shareMessage = {
   }
 }
 
-.share-score {
+.share_score {
   width: 400px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 60px;
+  margin: 0 auto 60px;
+  padding: 32px;
+  background-color: #f0f2f5;
+  border-radius: 10px;
+  .share_header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    .share_icon {
+      width: 64px;
+      height: 64px;
+      margin-right: 20px;
+    }
+    .share_title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-right: 20px;
+    }
+  }
+  .submit_button {
+    background-color: #005bac;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 10px 30px;
+    margin: 20px 20px 0;
+    border-radius: 10px;
+    &:hover {
+      background-color: #0066cc;
+    }
+  }
 }
 .messages_title {
   font-size: 32px;
