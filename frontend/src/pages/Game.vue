@@ -23,16 +23,16 @@ import CountDown from "../components/CountDown.vue";
 import Penalty from "../components/Penalty.vue";
 import GameOver from "../components/GameOver.vue";
 import axios from "axios";
-//import gamebgm from "../sound/bgm1.mp3";
-//import countsound from "../sound/countdown.mp3";
-//import finishwhistle from "../sound/finishwhistle.mp3";
+import gamebgm from "../sound/bgm1.mp3";
+import countsound from "../sound/countdown.mp3";
+import finishwhistle from "../sound/finishwhistle.mp3";
 
 const isStarted = ref(false);
 const isEnded = ref(false);
 
-//const gameBgm = new Audio(gamebgm);
-//const countSound = new Audio(countsound);
-//const finishWhistle = new Audio(finishwhistle);
+const gameBgm = new Audio(gamebgm);
+const countSound = new Audio(countsound);
+const finishWhistle = new Audio(finishwhistle);
 
 onMounted(() => {
   countDown();
@@ -81,7 +81,7 @@ const countDown = () => {
   let timer = setInterval(() => {
     countDownTimer.value--;
     if (countDownTimer.value === 2) {
-      //countSound.play(); // 音源が2秒分しかないのでここに入れました
+      countSound.play(); // 音源が2秒分しかないのでここに入れました
     }
     if (countDownTimer.value === -1) {
       clearInterval(timer);
@@ -94,7 +94,7 @@ const countDown = () => {
 watch(
   () => isStarted.value && allList.value.length > 0,
   () => {
-    //gameBgm.play();
+    gameBgm.play();
     addLeftIndex();
     addMiddleIndex();
     addRightIndex();
@@ -103,9 +103,9 @@ watch(
       if (gameTimer.value === 0) {
         isEnded.value = true;
         clearInterval(timer);
-        //gameBgm.pause();
-        //gameBgm.currentTime = 0;
-        //finishWhistle.play();
+        gameBgm.pause();
+        gameBgm.currentTime = 0;
+        finishWhistle.play();
         // リザルト画面に遷移
         setTimeout(() => {
           status.value = "result";
