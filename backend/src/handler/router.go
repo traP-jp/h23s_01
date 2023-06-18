@@ -52,6 +52,7 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	userHandler := NewUserHandler(tc, ur)
 	messagesHandler := NewMessageHandler(tc, implement.NewChannels(db), ur, reading.NewTokenizer())
 	scoreHandler := NewScoreHandler(tc, implement.NewScore(db))
+	ph := NewPostHandler(ur)
 
 	oauth := api.Group("/oauth2")
 	oauth.GET("/authorize", authorizeHandler)
@@ -64,7 +65,7 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 	admin.PATCH("/channel", channelHandler.patchChennelsHandler)
 	admin.PATCH("/user", userHandler.patchUserHandler)
 
-	api.POST("/post", client.postScoreHandler, client.checkTraqLoginMiddleware)
+	api.POST("/post", ph.postScoreHandler)
 	api.POST("/score", scoreHandler.registerScoreHandler, client.checkTraqLoginMiddleware)
 	api.GET("/score/highest", scoreHandler.getHighestScoreHandler, client.checkTraqLoginMiddleware)
 	api.GET("/ranking", scoreHandler.getScoreRankingHandler, client.checkTraqLoginMiddleware)
