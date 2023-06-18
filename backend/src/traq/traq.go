@@ -2,8 +2,8 @@ package traq
 
 import (
 	"context"
-	"math/rand"
 	"fmt"
+	"math/rand"
 	"strings"
 	"time"
 
@@ -18,6 +18,7 @@ type TraqClient interface {
 	GetChannelMessages(token, channelId string) ([]gotraq.Message, error)
 	GetAllUsers(token string) ([]domain.User, error)
 	PostScore(token string, score int) error
+	GetUserInfo(token string, id uuid.UUID) (*User, error)
 }
 
 type traqClient struct {
@@ -46,6 +47,17 @@ func (tc *traqClient) GetMe(token string) (*User, error) {
 		Name: meDetail.Name,
 	}
 	return me, nil
+}
+
+func (tc *traqClient) GetUserInfo(token string, id uuid.UUID) (*User, error) {
+	user, _, err := tc.client.UserApi.
+		GetUser(context.WithValue(context.Background(), gotraq.ContextAccessToken, token), id.String()).
+		Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	return &User{Id: id, Name: user.Name}, nil
 }
 
 func (tc *traqClient) GetAllChannels(token, parentChannelName string) ([]domain.Channel, error) {
