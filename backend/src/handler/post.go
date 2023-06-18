@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/traP-jp/h23s_01/backend/src/config"
 )
 
 type scoreBinder struct {
@@ -18,10 +19,31 @@ func (tc *traqClient) postScoreHandler(c echo.Context) error {
 	}
 
 	var score scoreBinder
-	c.Bind(&score)
-	if err := tc.tc.PostScore(token, score.Score); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: %v", err))
+	err = c.Bind(&score)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 
+	user, err := tc.tc.GetMe(token)
+	name := user.Name
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
+	}
+	err = postWebhook(fmt.Sprintf(message, name, name, score.Score))
+
 	return c.String(http.StatusOK, "ok")
+}
+
+var writer = config.GetWebhookConfig()
+
+const message = `:@%s: @%s は「[いかしかめかアクティビティズ](https://activities-ecru.vercel.app/)」で %d 点獲得しました！`
+
+func postWebhook(content string) error {
+	if writer == nil {
+		fmt.Println(content)
+		return nil
+	}
+	writer.SetEmbed(true)
+	_, err := fmt.Fprint(writer, content)
+	return err
 }
