@@ -1,5 +1,7 @@
 <script setup>
 import { onMounted } from "vue";
+import clicksound from "../sound/clicksound5.mp3";
+import resultbgm from "../sound/bgm2.mp3";
 import {
   resultIkaList,
   resultShikaList,
@@ -9,10 +11,53 @@ import {
   mekaScore,
   totalScore,
   status,
+  user_name,
+  API_URL,
+  user_id,
 } from "../store.js";
 import CardColumn from "../components/CardColumn.vue";
-import clicksound from "../sound/clicksound5.mp3";
-import resultbgm from "../sound/bgm2.mp3";
+import MessageCard from "../components/MessageCard.vue";
+import axios from "axios";
+onMounted(() => {});
+const shareMessage = {
+  messageId: "",
+  type: "result",
+  channel: "random/gamers/ikashikameka",
+  content: `@${user_name.value} は「いかしかめかアクティビティズ」で${totalScore.value}点獲得しました！`,
+  user: user_name.value,
+};
+const shareScore = () => {
+  // axiosでメッセージ投稿
+  /*
+  await axios
+    .post(`${API_URL}/api/score`, {
+      withCredentials: true,
+      body: {
+        score: totalScore.value,
+      },
+    })
+    .then(() => {
+      alert("スコアをシェアしました！");
+      axios
+        .get(`${API_URL}/api/score/highest`, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          console.log(res.data);
+        });
+    });
+  */
+  console.log(user_id.value);
+  axios
+    .post(`${API_URL}/api/post`, {
+      withCredentials: true,
+      id: "c5e40eb1-5f91-4690-9890-a5021fb644b2",
+      score: totalScore.value,
+    })
+    .then(() => {
+      alert("スコアをシェアしました！");
+    });
+};
 
 const resultBgm = new Audio(resultbgm);
 
@@ -53,6 +98,14 @@ onMounted(() => {
         <img class="scoreboard_detail_icon" src="/meka.svg" />
         <div class="scoreboard_detail_score">{{ mekaScore }}</div>
       </div>
+    </div>
+    <div class="share_score">
+      <div class="share_header">
+        <img class="share_icon" src="/traq.png" />
+        <div class="share_title">でスコアをシェアしよう！</div>
+      </div>
+      <MessageCard :message="shareMessage" :type="game" />
+      <button class="submit_button" @click="shareScore()">シェアする</button>
     </div>
     <div class="messages_title">今回出会ったメッセージ</div>
     <div class="messages_description">
@@ -117,6 +170,44 @@ onMounted(() => {
       font-size: 32px;
       font-weight: bold;
       margin: 0 20px;
+    }
+  }
+}
+
+.share_score {
+  width: 550px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 auto 60px;
+  padding: 32px;
+  background-color: #f0f2f5;
+  border-radius: 10px;
+  .share_header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    .share_icon {
+      width: 64px;
+      height: 64px;
+      margin-right: 20px;
+    }
+    .share_title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-right: 20px;
+    }
+  }
+  .submit_button {
+    background-color: #005bac;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 10px 30px;
+    margin: 20px 20px 0;
+    border-radius: 10px;
+    &:hover {
+      background-color: #0066cc;
     }
   }
 }

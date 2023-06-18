@@ -30,7 +30,7 @@ func SetUpRoutes(e *echo.Echo, db *sqlx.DB) {
 		AllowOrigins:     []string{config.GetAccessControlAllowOrigin()},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch, http.MethodOptions},
 		AllowCredentials: true,
-		AllowHeaders:     []string{echo.HeaderAccessControlAllowOrigin, echo.HeaderOrigin, echo.HeaderXHTTPMethodOverride},
+		AllowHeaders:     []string{echo.HeaderAccessControlAllowOrigin, echo.HeaderOrigin, echo.HeaderXHTTPMethodOverride, echo.HeaderContentType},
 	}))
 
 	e.GET("/", func(c echo.Context) error {
