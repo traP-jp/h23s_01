@@ -8,4 +8,5 @@ import (
 type ScoreRepository interface {
 	RegisterScore(score *domain.Score) error
 	GetHighestScore(userId uuid.UUID) (*domain.Score, error)
+	GetScoreRandking(limit int) ([]domain.Score, error)
 }
