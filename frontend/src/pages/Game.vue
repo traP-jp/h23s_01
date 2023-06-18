@@ -12,6 +12,8 @@ import {
   ikaScore,
   shikaScore,
   mekaScore,
+  allList,
+  API_URL,
 } from ".././store.js";
 import { ref, onMounted, watch } from "vue";
 import TimeBar from "../components/TimeBar.vue";
@@ -19,6 +21,7 @@ import CardColumn from "../components/CardColumn.vue";
 import CountDown from "../components/CountDown.vue";
 import Penalty from "../components/Penalty.vue";
 import GameOver from "../components/GameOver.vue";
+import axios from "axios";
 
 const isStarted = ref(false);
 
@@ -30,8 +33,38 @@ onMounted(() => {
   ikaScore.value = 0;
   shikaScore.value = 0;
   mekaScore.value = 0;
+
+  // messageをAPIから取得
+  axios
+    .get(`${API_URL}/api/message`, {
+      withCredentials: true,
+    })
+    .then((res) => {
+      console.log(res.data.messages);
+      allList.value = shuffleArray(res.data.messages);
+      const N = allList.value.length;
+      leftList.value = allList.value.slice(0, N / 3);
+      middleList.value = allList.value.slice(N / 3, (2 * N) / 3);
+      rightList.value = allList.value.slice((2 * N) / 3, N);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
+const shuffleArray = (array) => {
+  const cloneArray = [...array];
+
+  for (let i = cloneArray.length - 1; i >= 0; i--) {
+    let rand = Math.floor(Math.random() * (i + 1));
+    // 配列の要素の順番を入れ替える
+    let tmpStorage = cloneArray[i];
+    cloneArray[i] = cloneArray[rand];
+    cloneArray[rand] = tmpStorage;
+  }
+
+  return cloneArray;
+};
 // 時間管理
 const countDown = () => {
   countDownTimer.value = 3;
