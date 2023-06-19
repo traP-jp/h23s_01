@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -56,23 +57,72 @@ func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 
-	for {
-		channel, err := mh.cr.GetRandomChannel()
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
-		}
+	ctx, cancel := context.WithCancel(context.Background())
+	ctx = context.WithValue(ctx, key, token)
 
-		messages, err := mh.tc.GetChannelMessages(token, channel.Id.String())
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
+	result := concurrentTask(ctx, mh)
+
+	for {
+		mes := <-result
+		if mes.Ika || mes.Shika || mes.Meka {
+			messagesHit = append(messagesHit, mes)
+		} else {
+			messagesNot = append(messagesNot, mes)
 		}
+		if len(messagesHit)+len(messagesNot) >= count && len(messagesHit) >= count*3/10 && len(messagesHit) <= count*4/10 {
+			cancel()
+			break
+		}
+	}
+
+	messagesRes := make([]domain.Message, 0, count)
+	messagesRes = append(messagesRes, messagesHit...)
+	messagesRes = append(messagesRes, messagesNot...)
+	messagesRes = messagesRes[:count]
+
+	return c.JSON(http.StatusOK, getMessagesRes{
+		Count:    len(messagesRes),
+		Messages: messagesRes,
+	})
+}
+
+const LENGTH_LIMIT = 50
+
+var (
+	key         = tokenKey{}
+	ikaRegexp   = regexp.MustCompile(`(い|イ|ｲ)(か|カ|ｶ)`)
+	shikaRegexp = regexp.MustCompile(`(し|シ|ｼ)(か|カ|ｶ)`)
+	mekaRegexp  = regexp.MustCompile(`(め|メ|ﾒ)(か|カ|ｶ)`)
+)
+
+type tokenKey struct{}
+
+func checkIkaShikaMeka(content string, reg *regexp.Regexp) bool {
+	return reg.MatchString(content)
+}
+
+func checkLength(content string) bool {
+	return utf8.RuneCountInString(content) <= LENGTH_LIMIT
+}
+
+func concurrentTask(ctx context.Context, mh *messageHandler) <-chan domain.Message {
+	result := make(chan domain.Message)
+	for i := 0; i < 35; i++ {
+		go getMessages(ctx, mh, result)
+	}
+	return result
+}
+
+func getMessages(ctx context.Context, mh *messageHandler, ch chan domain.Message) {
+	token := ctx.Value(key).(string)
+	for {
+		channel, _ := mh.cr.GetRandomChannel()
+
+		messages, _ := mh.tc.GetChannelMessages(token, channel.Id.String())
 
 		for i := range messages {
 			ruby := mh.r.GetReading(messages[i].GetContent())
-			userName, err := mh.ur.GetUserNameById(messages[i].UserId)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, err)
-			}
+			userName, _ := mh.ur.GetUserNameById(messages[i].UserId)
 			content := messages[i].GetContent()
 			if !checkLength(content) {
 				continue
@@ -93,42 +143,11 @@ func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 				Meka:      isMeka,
 			}
 
-			if isIka || isShika || isMeka {
-				messagesHit = append(messagesHit, mes)
-			} else {
-				messagesNot = append(messagesNot, mes)
+			select {
+			case <-ctx.Done():
+				return
+			case ch <- mes:
 			}
-
-		}
-
-		if len(messagesHit)+len(messagesNot) >= count && len(messagesHit) >= count*3/10 && len(messagesHit) <= count*4/10 {
-			break
 		}
 	}
-
-	messagesRes := make([]domain.Message, 0, count)
-	messagesRes = append(messagesRes, messagesHit...)
-	messagesRes = append(messagesRes, messagesNot...)
-	messagesRes = messagesRes[:count]
-
-	return c.JSON(http.StatusOK, getMessagesRes{
-		Count:    len(messagesRes),
-		Messages: messagesRes,
-	})
-}
-
-const LENGTH_LIMIT = 50
-
-var (
-	ikaRegexp   = regexp.MustCompile(`(い|イ|ｲ)(か|カ|ｶ)`)
-	shikaRegexp = regexp.MustCompile(`(し|シ|ｼ)(か|カ|ｶ)`)
-	mekaRegexp  = regexp.MustCompile(`(め|メ|ﾒ)(か|カ|ｶ)`)
-)
-
-func checkIkaShikaMeka(content string, reg *regexp.Regexp) bool {
-	return reg.MatchString(content)
-}
-
-func checkLength(content string) bool {
-	return utf8.RuneCountInString(content) <= LENGTH_LIMIT
 }
