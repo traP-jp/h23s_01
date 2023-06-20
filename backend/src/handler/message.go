@@ -107,7 +107,7 @@ func checkLength(content string) bool {
 
 func concurrentTask(ctx context.Context, mh *messageHandler) <-chan domain.Message {
 	result := make(chan domain.Message)
-	for i := 0; i < 35; i++ {
+	for i := 0; i < 10; i++ {
 		go getMessages(ctx, mh, result)
 	}
 	return result
