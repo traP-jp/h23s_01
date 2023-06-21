@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"regexp"
 	"strconv"
+	"sync"
 	"unicode/utf8"
 
 	"github.com/google/uuid"
@@ -35,6 +37,20 @@ type getMessagesRes struct {
 	Messages []domain.Message `json:"messages,omitempty"`
 }
 
+type messagesSliceWithLock struct {
+	mu          sync.Mutex
+	messagesHit []domain.Message
+	messagesNot []domain.Message
+}
+
+type getMessagesGoroutine struct {
+	mh   *messageHandler
+	mess *messagesSliceWithLock
+	ch   chan int
+}
+
+const GOROUTINE_NUMBER = 50
+
 func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 	countStr := c.QueryParam("count")
 	var count int
@@ -48,8 +64,14 @@ func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 		count = c
 	}
 
-	messagesHit := make([]domain.Message, 0, count)
-	messagesNot := make([]domain.Message, 0, count)
+	mg := &getMessagesGoroutine{
+		mh: mh,
+		mess: &messagesSliceWithLock{
+			messagesHit: make([]domain.Message, 0, count),
+			messagesNot: make([]domain.Message, 0, count),
+		},
+		ch: make(chan int),
+	}
 
 	token, err := getToken(c)
 	if err != nil {
@@ -57,63 +79,45 @@ func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 	}
 
 	for {
-		channel, err := mh.cr.GetRandomChannel()
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
+		log.Println(1)
+		for i := 0; i < GOROUTINE_NUMBER; i++ {
+			go mg.getMessages(token)
+		}
+		chanCount := 0
+		for range mg.ch {
+			chanCount++
+			log.Printf("len: %d", len(mg.mess.messagesHit))
+			if chanCount == GOROUTINE_NUMBER || len(mg.mess.messagesHit) >= count*3/10 {
+				break
+			}
 		}
 
-		messages, err := mh.tc.GetChannelMessages(token, channel.Id.String())
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, err)
+		mg.mess.mu.Lock()
+		hitCount := len(mg.mess.messagesHit)
+		notHitCount := len(mg.mess.messagesNot)
+		if hitCount+notHitCount < count {
+			continue
 		}
-
-		for i := range messages {
-			ruby := mh.r.GetReading(messages[i].GetContent())
-			userName, err := mh.ur.GetUserNameById(messages[i].UserId)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, err)
-			}
-			content := messages[i].GetContent()
-			if !checkLength(content) {
-				continue
-			}
-
-			isIka := checkIkaShikaMeka(ruby, ikaRegexp)
-			isShika := checkIkaShikaMeka(ruby, shikaRegexp)
-			isMeka := checkIkaShikaMeka(content, mekaRegexp)
-
-			mes := domain.Message{
-				User:      userName,
-				MessageId: uuid.MustParse(messages[i].Id),
-				Channel:   channel.Name,
-				Content:   content,
-				CreatedAt: messages[i].GetCreatedAt(),
-				Ika:       isIka,
-				Shika:     isShika,
-				Meka:      isMeka,
-			}
-
-			if isIka || isShika || isMeka {
-				messagesHit = append(messagesHit, mes)
-			} else {
-				messagesNot = append(messagesNot, mes)
-			}
-
-		}
-
-		if len(messagesHit)+len(messagesNot) >= count && len(messagesHit) >= count*3/10 && len(messagesHit) <= count*4/10 {
+		if hitCount >= count*3/10 && hitCount <= count*4/10 {
+			mg.mess.mu.Unlock()
+			break
+		} else if len(mg.mess.messagesHit) > count*4/10 {
+			mg.mess.messagesHit = mg.mess.messagesHit[:count*4/10]
+			mg.mess.mu.Unlock()
 			break
 		}
+		mg.mess.mu.Unlock()
 	}
 
+	mg.mess.mu.Lock()
 	messagesRes := make([]domain.Message, 0, count)
-	messagesRes = append(messagesRes, messagesHit...)
-	messagesRes = append(messagesRes, messagesNot...)
-	messagesRes = messagesRes[:count]
+	messagesRes = append(messagesRes, mg.mess.messagesHit...)
+	messagesRes = append(messagesRes, mg.mess.messagesNot...)
+	mg.mess.mu.Unlock()
 
 	return c.JSON(http.StatusOK, getMessagesRes{
-		Count:    len(messagesRes),
-		Messages: messagesRes,
+		Count:    count,
+		Messages: messagesRes[:count],
 	})
 }
 
@@ -131,4 +135,44 @@ func checkIkaShikaMeka(content string, reg *regexp.Regexp) bool {
 
 func checkLength(content string) bool {
 	return utf8.RuneCountInString(content) <= LENGTH_LIMIT
+}
+
+func (mg *getMessagesGoroutine) getMessages(token string) {
+	channel, _ := mg.mh.cr.GetRandomChannel()
+
+	messages, _ := mg.mh.tc.GetChannelMessages(token, channel.Id.String())
+
+	for i := range messages {
+		content := messages[i].GetContent()
+		if !checkLength(content) {
+			continue
+		}
+		ruby := mg.mh.r.GetReading(messages[i].GetContent())
+		userName, _ := mg.mh.ur.GetUserNameById(messages[i].UserId)
+
+		isIka := checkIkaShikaMeka(ruby, ikaRegexp)
+		isShika := checkIkaShikaMeka(ruby, shikaRegexp)
+		isMeka := checkIkaShikaMeka(content, mekaRegexp)
+
+		mes := domain.Message{
+			User:      userName,
+			MessageId: uuid.MustParse(messages[i].Id),
+			Channel:   channel.Name,
+			Content:   content,
+			CreatedAt: messages[i].GetCreatedAt(),
+			Ika:       isIka,
+			Shika:     isShika,
+			Meka:      isMeka,
+		}
+
+		mg.mess.mu.Lock()
+		if isIka || isShika || isMeka {
+			mg.mess.messagesHit = append(mg.mess.messagesHit, mes)
+		} else {
+			mg.mess.messagesNot = append(mg.mess.messagesNot, mes)
+		}
+		mg.mess.mu.Unlock()
+	}
+
+	mg.ch <- 1
 }
