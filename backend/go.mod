@@ -16,6 +16,7 @@ require (
 	github.com/ras0q/traq-writer v1.3.0
 	github.com/srinathgs/mysqlstore v0.0.0-20200417050510-9cbb9420fc4c
 	github.com/traPtitech/go-traq v0.0.0-20230615103803-82fa0621d359
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 )
 
 require (

@@ -13,6 +13,7 @@ import (
 	"github.com/traP-jp/h23s_01/backend/src/reading"
 	"github.com/traP-jp/h23s_01/backend/src/repository"
 	"github.com/traP-jp/h23s_01/backend/src/traq"
+	"golang.org/x/sync/errgroup"
 )
 
 type messageHandler struct {
@@ -36,6 +37,11 @@ type getMessagesRes struct {
 	Messages []domain.Message `json:"messages,omitempty"`
 }
 
+type goroutine struct {
+	mh *messageHandler
+	eg *errgroup.Group
+}
+
 func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 	countStr := c.QueryParam("count")
 	var count int
@@ -57,10 +63,12 @@ func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
+	eg, ctx := errgroup.WithContext(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	ctx = context.WithValue(ctx, key, token)
 
-	result := concurrentTask(ctx, mh)
+	gr := &goroutine{mh: mh, eg: eg}
+	result := gr.concurrentTask(ctx)
 
 	for {
 		mes := <-result
@@ -73,6 +81,10 @@ func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 			cancel()
 			break
 		}
+	}
+
+	if err := eg.Wait(); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
 	messagesRes := make([]domain.Message, 0, count)
@@ -105,24 +117,41 @@ func checkLength(content string) bool {
 	return utf8.RuneCountInString(content) <= LENGTH_LIMIT
 }
 
-func concurrentTask(ctx context.Context, mh *messageHandler) <-chan domain.Message {
+// いくつ並列で並行処理させるか
+const GOROUTINE_NUMBER = 5
+
+// 並行処理を実行する
+// ctxにはtokenを含める
+func (gr *goroutine) concurrentTask(ctx context.Context) <-chan domain.Message {
 	result := make(chan domain.Message)
-	for i := 0; i < 10; i++ {
-		go getMessage(ctx, mh, result)
+	for i := 0; i < GOROUTINE_NUMBER; i++ {
+		gr.eg.Go(func() error {
+			return gr.getMessage(ctx, result)
+		})
 	}
 	return result
 }
 
-func getMessage(ctx context.Context, mh *messageHandler, ch chan domain.Message) {
+// メッセージを取得して、送信
+func (gr *goroutine) getMessage(ctx context.Context, ch chan domain.Message) error {
 	token := ctx.Value(key).(string)
 	for {
-		channel, _ := mh.cr.GetRandomChannel()
+		channel, err := gr.mh.cr.GetRandomChannel()
+		if err != nil {
+			return err
+		}
 
-		messages, _ := mh.tc.GetChannelMessages(token, channel.Id.String())
+		messages, err := gr.mh.tc.GetChannelMessages(token, channel.Id.String())
+		if err != nil {
+			return err
+		}
 
 		for i := range messages {
-			ruby := mh.r.GetReading(messages[i].GetContent())
-			userName, _ := mh.ur.GetUserNameById(messages[i].UserId)
+			ruby := gr.mh.r.GetReading(messages[i].GetContent())
+			userName, err := gr.mh.ur.GetUserNameById(messages[i].UserId)
+			if err != nil {
+				return err
+			}
 			content := messages[i].GetContent()
 			if !checkLength(content) {
 				continue
@@ -145,7 +174,7 @@ func getMessage(ctx context.Context, mh *messageHandler, ch chan domain.Message)
 
 			select {
 			case <-ctx.Done():
-				return
+				return nil
 			case ch <- mes:
 			}
 		}
