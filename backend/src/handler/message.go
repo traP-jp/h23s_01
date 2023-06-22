@@ -13,7 +13,6 @@ import (
 	"github.com/traP-jp/h23s_01/backend/src/reading"
 	"github.com/traP-jp/h23s_01/backend/src/repository"
 	"github.com/traP-jp/h23s_01/backend/src/traq"
-	"golang.org/x/sync/errgroup"
 )
 
 type messageHandler struct {
@@ -37,10 +36,27 @@ type getMessagesRes struct {
 	Messages []domain.Message `json:"messages,omitempty"`
 }
 
-type goroutine struct {
+// messageに関する並行処理を担当する構造体
+type messageWorker struct {
 	mh *messageHandler
-	eg *errgroup.Group
+	ch chan Result
 }
+
+// messageを取得したときの結果
+type Result struct {
+	message domain.Message
+	err     error
+}
+
+func newMessageWorker(mh *messageHandler) *messageWorker {
+	return &messageWorker{
+		mh: mh,
+		ch: make(chan Result),
+	}
+}
+
+// goroutineの数
+const GOROUTINE_NUMBER = 5
 
 func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 	countStr := c.QueryParam("count")
@@ -63,15 +79,22 @@ func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, err)
 	}
 
-	eg, ctx := errgroup.WithContext(context.Background())
-	ctx, cancel := context.WithCancel(ctx)
+	ctx, cancel := context.WithCancel(context.Background())
 	ctx = context.WithValue(ctx, key, token)
 
-	gr := &goroutine{mh: mh, eg: eg}
-	result := gr.concurrentTask(ctx)
+	mw := newMessageWorker(mh)
+	for i := 0; i < GOROUTINE_NUMBER; i++ {
+		go mw.getMessage(ctx)
+	}
 
 	for {
-		mes := <-result
+		r := <-mw.ch
+		if r.err != nil {
+			cancel()
+			// 本来ならエラーの種類に合わせて適切なレスポンスを返す
+			return echo.NewHTTPError(http.StatusInternalServerError, err)
+		}
+		mes := r.message
 		if mes.Ika || mes.Shika || mes.Meka {
 			messagesHit = append(messagesHit, mes)
 		} else {
@@ -81,10 +104,6 @@ func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 			cancel()
 			break
 		}
-	}
-
-	if err := eg.Wait(); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err)
 	}
 
 	messagesRes := make([]domain.Message, 0, count)
@@ -117,40 +136,29 @@ func checkLength(content string) bool {
 	return utf8.RuneCountInString(content) <= LENGTH_LIMIT
 }
 
-// いくつ並列で並行処理させるか
-const GOROUTINE_NUMBER = 5
-
-// 並行処理を実行する
-// ctxにはtokenを含める
-func (gr *goroutine) concurrentTask(ctx context.Context) <-chan domain.Message {
-	result := make(chan domain.Message)
-	for i := 0; i < GOROUTINE_NUMBER; i++ {
-		gr.eg.Go(func() error {
-			return gr.getMessage(ctx, result)
-		})
-	}
-	return result
-}
-
-// メッセージを取得して、送信
-func (gr *goroutine) getMessage(ctx context.Context, ch chan domain.Message) error {
+// メッセージを取得して送信
+// tokenはctxに含める
+func (mw *messageWorker) getMessage(ctx context.Context) {
 	token := ctx.Value(key).(string)
 	for {
-		channel, err := gr.mh.cr.GetRandomChannel()
+		channel, err := mw.mh.cr.GetRandomChannel()
 		if err != nil {
-			return err
+			mw.ch <- Result{err: err}
+			return
 		}
 
-		messages, err := gr.mh.tc.GetChannelMessages(token, channel.Id.String())
+		messages, err := mw.mh.tc.GetChannelMessages(token, channel.Id.String())
 		if err != nil {
-			return err
+			mw.ch <- Result{err: err}
+			return
 		}
 
 		for i := range messages {
-			ruby := gr.mh.r.GetReading(messages[i].GetContent())
-			userName, err := gr.mh.ur.GetUserNameById(messages[i].UserId)
+			ruby := mw.mh.r.GetReading(messages[i].GetContent())
+			userName, err := mw.mh.ur.GetUserNameById(messages[i].UserId)
 			if err != nil {
-				return err
+				mw.ch <- Result{err: err}
+				return
 			}
 			content := messages[i].GetContent()
 			if !checkLength(content) {
@@ -174,8 +182,8 @@ func (gr *goroutine) getMessage(ctx context.Context, ch chan domain.Message) err
 
 			select {
 			case <-ctx.Done():
-				return nil
-			case ch <- mes:
+				return
+			case mw.ch <- Result{message: mes}:
 			}
 		}
 	}
