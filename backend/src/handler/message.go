@@ -56,7 +56,7 @@ func newMessageWorker(mh *messageHandler) *messageWorker {
 }
 
 // goroutineの数
-const GOROUTINE_NUMBER = 5
+const GOROUTINE_NUMBER = 30
 
 func (mh *messageHandler) getMessagesHandler(c echo.Context) error {
 	countStr := c.QueryParam("count")

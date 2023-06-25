@@ -101,7 +101,7 @@ func (tc *traqClient) GetAllChannels(token, parentChannelName string) ([]domain.
 	return childChannels, nil
 }
 
-const MESSAGES_PER_CHANNEL = 100
+const MESSAGES_PER_CHANNEL = 25
 
 func (tc *traqClient) GetChannelMessages(token, channelId string) ([]gotraq.Message, error) {
 	messages, _, err := tc.client.MessageApi.
