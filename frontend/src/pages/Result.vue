@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted } from "vue";
-//import clicksound from "../sound/clicksound5.mp3";
-//import resultbgm from "../sound/bgm2.mp3";
+import clicksound from "../sound/clicksound5.mp3";
+import resultbgm from "../sound/bgm2.mp3";
 import {
   resultIkaList,
   resultShikaList,
@@ -37,28 +37,28 @@ const shareScore = () => {
       alert("スコアをシェアしました！");
     });
 };
-//const resultBgm = new Audio(resultbgm);
+const resultBgm = new Audio(resultbgm);
 
 const replay = () => {
-  //resultBgm.pause();
-  //resultBgm.currentTime = 0;
-  //const clickSound = new Audio(clicksound);
-  //clickSound.volume = 0.2;
-  //clickSound.play();
+  resultBgm.pause();
+  resultBgm.currentTime = 0;
+  const clickSound = new Audio(clicksound);
+  clickSound.volume = 0.2;
+  clickSound.play();
   status.value = "game";
 };
 
 const toTitle = () => {
-  //resultBgm.pause();
-  //resultBgm.currentTime = 0;
-  //const clickSound = new Audio(clicksound);
-  //clickSound.volume = 0.2;
-  //clickSound.play();
+  resultBgm.pause();
+  resultBgm.currentTime = 0;
+  const clickSound = new Audio(clicksound);
+  clickSound.volume = 0.2;
+  clickSound.play();
   status.value = "title";
 };
 
 onMounted(() => {
-  //resultBgm.play();
+  resultBgm.play();
 });
 </script>
 <template>
